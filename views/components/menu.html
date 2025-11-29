@@ -1,0 +1,35 @@
+<nav>
+  <ul>
+    <li>
+      <a href="/" class="nav-logo">
+        <span class="text-accent">MINE</span><span class="text-warn">OPS</span>
+      </a>
+    </li>
+    <li><a href="/dashboard" id="nav-dashboard">DASHBOARD</a></li>
+    <li><a href="/hardware" id="nav-hardware">HARDWARE</a></li>
+    <li><a href="/farm" id="nav-farm">FARM</a></li>
+    <li style="margin-left: auto;">
+      <span class="text-dim">HASHRATE:</span>
+      <span class="text-accent" id="global-hashrate">0.00 MH/s</span>
+    </li>
+    <li>
+      <span class="text-dim">BALANCE:</span>
+      <span class="text-good" id="global-balance">0.00000000 BTC</span>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  // Zvýraznit aktivní položku menu podle aktuální cesty
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('nav a:not(.nav-logo)');
+
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPath ||
+          (currentPath === '/' && link.getAttribute('href') === '/dashboard')) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>

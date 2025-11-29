@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINEOPS - Farm Management</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Menu Component -->
+  <div id="menu-container"></div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="panel mb-lg">
+      <div class="panel-header">
+        <h1>FARM MANAGEMENT</h1>
+      </div>
+      <div class="panel-content">
+        <p class="text-muted">Správa těžební farmy a konfigurace</p>
+      </div>
+    </div>
+
+    <!-- Farm Overview -->
+    <div class="grid grid-2 mb-lg">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>ACTIVE MINERS</h2>
+        </div>
+        <div class="panel-content">
+          <p class="text-dim text-center">No active miners...</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>FARM SETTINGS</h2>
+        </div>
+        <div class="panel-content">
+          <div class="mb-md">
+            <label>Mining Pool</label>
+            <select style="width: 100%; margin-top: 4px;">
+              <option>Select pool...</option>
+            </select>
+          </div>
+
+          <div class="mb-md">
+            <label>Power Mode</label>
+            <select style="width: 100%; margin-top: 4px;">
+              <option>Balanced</option>
+              <option>Performance</option>
+              <option>Eco</option>
+            </select>
+          </div>
+
+          <button class="btn-primary" style="width: 100%;">APPLY SETTINGS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Farm Stats -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>FARM STATISTICS</h2>
+      </div>
+      <div class="panel-content">
+        <div class="grid grid-3">
+          <div class="stat">
+            <label class="stat-label">Uptime</label>
+            <div class="stat-value">0h 0m</div>
+          </div>
+
+          <div class="stat">
+            <label class="stat-label">Total Blocks</label>
+            <div class="stat-value text-good">0</div>
+          </div>
+
+          <div class="stat">
+            <label class="stat-label">Pool Share</label>
+            <div class="stat-value text-accent">0.00%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/components.js"></script>
+</body>
+</html>

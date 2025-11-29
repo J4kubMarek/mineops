@@ -1,0 +1,392 @@
+/*
+ * MINEOPS - Crypto Mining Idle Game
+ * Retro Terminal UI Design System
+ * Inspired by: Game Boy Color, MS-DOS, Bloomberg Terminal
+ */
+
+/* CSS Variables - Color Palette */
+:root {
+  /* Background - třístupňová hloubka */
+  --bg: #0a0e1a;
+  --panel: #0f1424;
+  --panel-light: #151b2e;
+
+  /* Borders */
+  --panel-border: #1e2740;
+  --panel-border-light: #2a3654;
+
+  /* Text - třístupňová prominence */
+  --text: #c8d0e0;
+  --text-muted: #8892a8;
+  --text-dim: #505868;
+
+  /* Accent colors - ostré, saturované */
+  --accent: #00d4ff;
+  --accent-warn: #ff9640;
+  --accent-good: #00ff6a;
+  --accent-danger: #ff3848;
+
+  /* Spacing system - násobky 4px */
+  --space-xs: 2px;
+  --space-sm: 4px;
+  --space-md: 8px;
+  --space-lg: 12px;
+  --space-xl: 16px;
+
+  /* Font */
+  --font-mono: "JetBrains Mono", "Fira Mono", ui-monospace, Consolas, monospace;
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typografie */
+h1 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+h2 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+h3 {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+label {
+  font-size: 8px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+/* Layout */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-xl);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Panel - základní UI element */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 0;
+}
+
+.panel-header {
+  background: var(--bg);
+  border-bottom: 1px solid var(--panel-border);
+  padding: var(--space-md);
+}
+
+.panel-content {
+  padding: var(--space-lg);
+}
+
+.panel-light {
+  background: var(--panel-light);
+}
+
+/* Separator - dashed */
+.separator {
+  border: none;
+  border-top: 1px dashed var(--panel-border);
+  margin: var(--space-md) 0;
+}
+
+/* Buttons */
+button, .btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: var(--space-md) var(--space-xl);
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  border-radius: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: 100ms linear;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button:hover, .btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+button:active, .btn:active {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+button.btn-primary {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+button.btn-primary:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+button.btn-success {
+  border-color: var(--accent-good);
+  color: var(--accent-good);
+}
+
+button.btn-success:hover {
+  background: var(--accent-good);
+  color: var(--bg);
+}
+
+button.btn-danger {
+  border-color: var(--accent-danger);
+  color: var(--accent-danger);
+}
+
+button.btn-danger:hover {
+  background: var(--accent-danger);
+  color: var(--bg);
+}
+
+button:disabled, .btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: var(--panel-border);
+  color: var(--text-dim);
+}
+
+/* Input fields */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: var(--space-md);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 0;
+  color: var(--text);
+  transition: 100ms linear;
+  text-align: center;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Navigation */
+nav {
+  background: var(--panel);
+  border-bottom: 1px solid var(--panel-border);
+  padding: var(--space-lg) var(--space-xl);
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+nav a {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid transparent;
+  transition: 100ms linear;
+  display: block;
+}
+
+nav a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+nav a.active {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Stats Display */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.stat-label {
+  font-size: 8px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-value.positive {
+  color: var(--accent-good);
+}
+
+.stat-value.negative {
+  color: var(--accent-danger);
+}
+
+.stat-value.warning {
+  color: var(--accent-warn);
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+
+thead {
+  background: var(--bg);
+}
+
+th {
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: left;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--panel-border);
+  color: var(--text-dim);
+}
+
+td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--panel-border);
+  color: var(--text);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: var(--panel-light);
+}
+
+/* Utility classes */
+.text-accent { color: var(--accent); }
+.text-good { color: var(--accent-good); }
+.text-warn { color: var(--accent-warn); }
+.text-danger { color: var(--accent-danger); }
+.text-muted { color: var(--text-muted); }
+.text-dim { color: var(--text-dim); }
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.mb-xs { margin-bottom: var(--space-xs); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+
+.mt-xs { margin-top: var(--space-xs); }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+
+/* Animations - stepped pro retro efekt */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.pulse {
+  animation: pulse 2s steps(4) infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.blink {
+  animation: blink 1s steps(2) infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--panel-border);
+  border: 1px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--panel-border-light);
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINEOPS - Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Menu Component -->
+  <div id="menu-container"></div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="panel mb-lg">
+      <div class="panel-header">
+        <h1>DASHBOARD</h1>
+      </div>
+      <div class="panel-content">
+        <p class="text-muted">Dashboard - přehled těžby a statistiky</p>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-3 mb-lg">
+      <div class="panel">
+        <div class="panel-content">
+          <div class="stat">
+            <label class="stat-label">Total Hashrate</label>
+            <div class="stat-value text-accent">0.00 MH/s</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-content">
+          <div class="stat">
+            <label class="stat-label">Balance</label>
+            <div class="stat-value text-good">0.00000000 BTC</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-content">
+          <div class="stat">
+            <label class="stat-label">Active Miners</label>
+            <div class="stat-value">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>RECENT ACTIVITY</h2>
+      </div>
+      <div class="panel-content">
+        <p class="text-dim text-center">No activity yet...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/components.js"></script>
+</body>
+</html>
