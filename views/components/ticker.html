@@ -1,0 +1,88 @@
+<div class="ticker">
+  <div class="ticker-item" id="ticker-btc">
+    <span class="ticker-label">BTC:</span>
+    <span class="ticker-value" data-crypto="bitcoin">---.--</span>
+    <span class="ticker-change" data-crypto="bitcoin-change">--.--% ▼</span>
+  </div>
+  <div class="ticker-item" id="ticker-eth">
+    <span class="ticker-label">ETH:</span>
+    <span class="ticker-value" data-crypto="ethereum">---.--</span>
+    <span class="ticker-change" data-crypto="ethereum-change">--.--% ▼</span>
+  </div>
+  <div class="ticker-item" id="ticker-xmr">
+    <span class="ticker-label">XMR:</span>
+    <span class="ticker-value" data-crypto="monero">---.--</span>
+    <span class="ticker-change" data-crypto="monero-change">--.--% ▼</span>
+  </div>
+</div>
+
+<script>
+  // Crypto price ticker with backend API
+  (function() {
+    const API_ENDPOINT = '/api/crypto/prices';
+    const UPDATE_INTERVAL = 60000; // 60 seconds
+
+    async function updatePrices() {
+      try {
+        const response = await fetch(API_ENDPOINT);
+        if (!response.ok) {
+          throw new Error('Failed to fetch prices');
+        }
+
+        const data = await response.json();
+
+        // Update BTC
+        if (data.bitcoin) {
+          updateTickerItem('bitcoin', data.bitcoin.usd, data.bitcoin.usd_24h_change);
+        }
+
+        // Update ETH
+        if (data.ethereum) {
+          updateTickerItem('ethereum', data.ethereum.usd, data.ethereum.usd_24h_change);
+        }
+
+        // Update XMR
+        if (data.monero) {
+          updateTickerItem('monero', data.monero.usd, data.monero.usd_24h_change);
+        }
+      } catch (error) {
+        console.error('Error fetching crypto prices:', error);
+        // Show error state
+        document.querySelectorAll('.ticker-value').forEach(el => {
+          el.textContent = 'ERR';
+          el.classList.add('text-danger');
+        });
+      }
+    }
+
+    function updateTickerItem(crypto, price, change) {
+      const valueEl = document.querySelector(`[data-crypto="${crypto}"]`);
+      const changeEl = document.querySelector(`[data-crypto="${crypto}-change"]`);
+
+      if (valueEl) {
+        // Format price based on value
+        const formattedPrice = price >= 1000
+          ? `$${price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+          : `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        valueEl.textContent = formattedPrice;
+        valueEl.classList.remove('text-danger');
+      }
+
+      if (changeEl && change !== undefined) {
+        const formattedChange = change.toFixed(2);
+        const arrow = change >= 0 ? '▲' : '▼';
+        const changeClass = change >= 0 ? 'text-good' : 'text-danger';
+
+        changeEl.textContent = `${formattedChange}% ${arrow}`;
+        changeEl.className = `ticker-change ${changeClass}`;
+      }
+    }
+
+    // Initial load
+    updatePrices();
+
+    // Update every minute
+    setInterval(updatePrices, UPDATE_INTERVAL);
+  })();
+</script>
