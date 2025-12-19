@@ -280,10 +280,14 @@ select:focus {
 
 .sidebar-menu {
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .sidebar-menu li {
   margin: 0;
+  width: 100%;
 }
 
 .sidebar-link {
@@ -299,6 +303,8 @@ select:focus {
   letter-spacing: 0.5px;
   transition: 100ms linear;
   border-left: 2px solid transparent;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sidebar-link:hover {
