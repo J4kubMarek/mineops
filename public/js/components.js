@@ -27,7 +27,8 @@ async function loadComponent(elementId, componentPath) {
   }
 }
 
-// Auto-load menu component on all pages
+// Auto-load components on all pages
 document.addEventListener('DOMContentLoaded', () => {
-  loadComponent('menu-container', '/components/menu.html');
+  loadComponent('sidebar-container', '/components/sidebar.html');
+  loadComponent('ticker-container', '/components/ticker.html');
 });

@@ -1,0 +1,95 @@
+<aside class="sidebar">
+  <!-- Logo -->
+  <div class="sidebar-header">
+    <a href="/" class="sidebar-logo">
+      <span class="text-accent">MINE</span><span class="text-warn">OPS</span>
+    </a>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav">
+    <ul class="sidebar-menu">
+      <li>
+        <a href="/dashboard" class="sidebar-link" data-route="dashboard">
+          <span class="sidebar-icon">▶</span>
+          <span>DASHBOARD</span>
+        </a>
+      </li>
+      <li>
+        <a href="/farm" class="sidebar-link" data-route="farm">
+          <span class="sidebar-icon">▶</span>
+          <span>FARM_OPS</span>
+        </a>
+      </li>
+      <li>
+        <a href="/pool" class="sidebar-link" data-route="pool">
+          <span class="sidebar-icon">▶</span>
+          <span>POOL</span>
+        </a>
+      </li>
+      <li>
+        <a href="/market" class="sidebar-link" data-route="market">
+          <span class="sidebar-icon">▶</span>
+          <span>MARKET</span>
+        </a>
+      </li>
+      <li>
+        <a href="/network" class="sidebar-link" data-route="network">
+          <span class="sidebar-icon">▶</span>
+          <span>NETWORK</span>
+        </a>
+      </li>
+      <li>
+        <a href="/research" class="sidebar-link" data-route="research">
+          <span class="sidebar-icon">▶</span>
+          <span>RESEARCH</span>
+        </a>
+      </li>
+      <li>
+        <a href="/exploits" class="sidebar-link" data-route="exploits">
+          <span class="sidebar-icon">▶</span>
+          <span>EXPLOITS</span>
+        </a>
+      </li>
+      <li>
+        <a href="/system" class="sidebar-link" data-route="system">
+          <span class="sidebar-icon">▶</span>
+          <span>SYSTEM</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Disconnect Button -->
+  <div class="sidebar-footer">
+    <button class="sidebar-disconnect" id="disconnect-btn">
+      <span>[ DISCONNECT ]</span>
+    </button>
+  </div>
+</aside>
+
+<script>
+  // Zvýraznit aktivní položku menu podle aktuální cesty
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const links = document.querySelectorAll('.sidebar-link');
+
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href === currentPath || (currentPath === '/' && href === '/dashboard')) {
+        link.classList.add('active');
+        link.querySelector('.sidebar-icon').textContent = '●';
+      }
+    });
+
+    // Disconnect button handler
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    if (disconnectBtn) {
+      disconnectBtn.addEventListener('click', () => {
+        if (confirm('Opravdu se chcete odhlásit?')) {
+          window.location.href = '/logout';
+        }
+      });
+    }
+  });
+</script>
