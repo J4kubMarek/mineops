@@ -27,6 +27,36 @@ app.get('/farm', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'farm.html'));
 });
 
+app.get('/pool', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'pool.html'));
+});
+
+app.get('/market', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'market.html'));
+});
+
+app.get('/network', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'network.html'));
+});
+
+app.get('/research', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'research.html'));
+});
+
+app.get('/exploits', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'exploits.html'));
+});
+
+app.get('/system', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'system.html'));
+});
+
+// Logout route
+app.get('/logout', (req, res) => {
+  // TODO: Implement proper session logout
+  res.redirect('/');
+});
+
 // Component routes
 app.get('/components/:component', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'components', req.params.component));
