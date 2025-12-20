@@ -144,8 +144,8 @@ const GameConfig = {
     // UŽITEČNÉ: Pro testování bez závislosti na API
     forceBtcPrice: 0,
 
-    // Vynucená cena ETH
-    forceEthPrice: 0,
+    // Vynucená cena DOGE
+    forceDogePrice: 0,
 
     // Vynucená cena XMR
     forceXmrPrice: 0,

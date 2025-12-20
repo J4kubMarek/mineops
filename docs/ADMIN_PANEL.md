@@ -72,7 +72,7 @@ Editovatelné herní proměnné rozdělené do skupin:
 | Proměnná | Default | Popis |
 |----------|---------|-------|
 | `forceBtcPrice` | 0 | Vynucená cena BTC (0 = API) |
-| `forceEthPrice` | 0 | Vynucená cena ETH (0 = API) |
+| `forceDogePrice` | 0 | Vynucená cena DOGE (0 = API) |
 | `forceXmrPrice` | 0 | Vynucená cena XMR (0 = API) |
 
 **Tlačítka:**
@@ -191,7 +191,7 @@ Ceny kryptoměn jsou cachovány na serveru s automatickou aktualizací:
 
 - **Zdroj:** CoinGecko API (free tier)
 - **Interval:** 60 sekund (konfigurovatelné)
-- **Coins:** Bitcoin, Ethereum, Monero
+- **Coins:** Bitcoin, Dogecoin, Monero
 
 ### Force Override
 

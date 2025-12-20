@@ -121,7 +121,7 @@ Ceny kryptoměn jsou cachovány na serveru aby:
 ```javascript
 let priceCache = {
   bitcoin: { usd: 0, usd_24h_change: 0 },
-  ethereum: { usd: 0, usd_24h_change: 0 },
+  dogecoin: { usd: 0, usd_24h_change: 0 },
   monero: { usd: 0, usd_24h_change: 0 },
 };
 ```
@@ -141,8 +141,8 @@ Admin může nastavit fixní ceny:
 ```javascript
 // V gameConfig.js
 override: {
-  forceBtcPrice: 0,  // 0 = použít API
-  forceEthPrice: 0,  // >0 = fixní cena
+  forceBtcPrice: 0,   // 0 = použít API
+  forceDogePrice: 0,  // >0 = fixní cena
   forceXmrPrice: 0,
 }
 ```

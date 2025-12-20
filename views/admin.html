@@ -178,9 +178,9 @@
             </div>
 
             <div class="config-row">
-              <label for="cfg-force-eth">force_eth_price:</label>
-              <input type="number" id="cfg-force-eth" step="1" min="0" value="0"
-                     data-section="override" data-key="forceEthPrice">
+              <label for="cfg-force-doge">force_doge_price:</label>
+              <input type="number" id="cfg-force-doge" step="0.01" min="0" value="0"
+                     data-section="override" data-key="forceDogePrice">
               <span class="config-hint">(0 = Use API)</span>
             </div>
 
@@ -586,7 +586,7 @@
           setInputValue('cfg-tick-interval', config.system.tickInterval);
           setInputValue('cfg-price-interval', config.system.priceUpdateInterval);
           setInputValue('cfg-force-btc', config.override.forceBtcPrice);
-          setInputValue('cfg-force-eth', config.override.forceEthPrice);
+          setInputValue('cfg-force-doge', config.override.forceDogePrice);
           setInputValue('cfg-force-xmr', config.override.forceXmrPrice);
 
           showNotification('Config loaded', 'success');

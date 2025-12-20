@@ -4,10 +4,10 @@
     <span class="ticker-value" data-crypto="bitcoin">---.--</span>
     <span class="ticker-change" data-crypto="bitcoin-change">--.--% ▼</span>
   </div>
-  <div class="ticker-item" id="ticker-eth">
-    <span class="ticker-label">ETH:</span>
-    <span class="ticker-value" data-crypto="ethereum">---.--</span>
-    <span class="ticker-change" data-crypto="ethereum-change">--.--% ▼</span>
+  <div class="ticker-item" id="ticker-doge">
+    <span class="ticker-label">DOGE:</span>
+    <span class="ticker-value" data-crypto="dogecoin">---.--</span>
+    <span class="ticker-change" data-crypto="dogecoin-change">--.--% ▼</span>
   </div>
   <div class="ticker-item" id="ticker-xmr">
     <span class="ticker-label">XMR:</span>
@@ -36,9 +36,9 @@
           updateTickerItem('bitcoin', data.bitcoin.usd, data.bitcoin.usd_24h_change);
         }
 
-        // Update ETH
-        if (data.ethereum) {
-          updateTickerItem('ethereum', data.ethereum.usd, data.ethereum.usd_24h_change);
+        // Update DOGE
+        if (data.dogecoin) {
+          updateTickerItem('dogecoin', data.dogecoin.usd, data.dogecoin.usd_24h_change);
         }
 
         // Update XMR

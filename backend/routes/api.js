@@ -13,7 +13,7 @@ router.get('/health', (req, res) => {
 // CoinGecko API proxy - crypto prices
 router.get('/crypto/prices', async (req, res) => {
   try {
-    const coins = ['bitcoin', 'ethereum', 'monero'];
+    const coins = ['bitcoin', 'dogecoin', 'monero'];
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(',')}&vs_currencies=usd&include_24hr_change=true`;
 
     // Use native fetch (Node.js 18+) or fallback to https module
