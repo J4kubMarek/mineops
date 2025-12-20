@@ -20,7 +20,7 @@ const { GameConfig } = require('../config/gameConfig');
  */
 let priceCache = {
   bitcoin: { usd: 0, usd_24h_change: 0 },
-  ethereum: { usd: 0, usd_24h_change: 0 },
+  dogecoin: { usd: 0, usd_24h_change: 0 },
   monero: { usd: 0, usd_24h_change: 0 },
 };
 
@@ -45,7 +45,7 @@ let updateInterval = null;
  * @returns {Promise<Object|null>} - Cenová data nebo null při chybě
  */
 async function fetchPricesFromAPI() {
-  const coins = ['bitcoin', 'ethereum', 'monero'];
+  const coins = ['bitcoin', 'dogecoin', 'monero'];
   const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coins.join(',')}&vs_currencies=usd&include_24hr_change=true`;
 
   try {
@@ -96,7 +96,7 @@ async function updatePriceCache() {
       // Aktualizace cache s API daty
       priceCache = {
         bitcoin: apiData.bitcoin || priceCache.bitcoin,
-        ethereum: apiData.ethereum || priceCache.ethereum,
+        dogecoin: apiData.dogecoin || priceCache.dogecoin,
         monero: apiData.monero || priceCache.monero,
       };
 
@@ -105,7 +105,7 @@ async function updatePriceCache() {
 
       console.log('[PriceService] Cache aktualizována:', {
         btc: priceCache.bitcoin.usd,
-        eth: priceCache.ethereum.usd,
+        doge: priceCache.dogecoin.usd,
         xmr: priceCache.monero.usd,
       });
     }
@@ -129,10 +129,10 @@ function getPrices() {
       usd_24h_change: override.forceBtcPrice > 0 ? 0 : priceCache.bitcoin.usd_24h_change,
       isForced: override.forceBtcPrice > 0,
     },
-    ethereum: {
-      usd: override.forceEthPrice > 0 ? override.forceEthPrice : priceCache.ethereum.usd,
-      usd_24h_change: override.forceEthPrice > 0 ? 0 : priceCache.ethereum.usd_24h_change,
-      isForced: override.forceEthPrice > 0,
+    dogecoin: {
+      usd: override.forceDogePrice > 0 ? override.forceDogePrice : priceCache.dogecoin.usd,
+      usd_24h_change: override.forceDogePrice > 0 ? 0 : priceCache.dogecoin.usd_24h_change,
+      isForced: override.forceDogePrice > 0,
     },
     monero: {
       usd: override.forceXmrPrice > 0 ? override.forceXmrPrice : priceCache.monero.usd,
