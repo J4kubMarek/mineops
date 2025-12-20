@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROOT_TERMINAL v0.1 // MINEOPS ADMIN</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-theme">
+
+  <!--
+  =============================================================================
+  MINEOPS ADMIN PANEL - ROOT_TERMINAL v0.1
+  =============================================================================
+
+  Tato stránka slouží pro administraci herního serveru.
+  Červené téma signalizuje nebezpečné operace.
+
+  SEKCE:
+  1. HEADER - Status bar s live monitoring
+  2. MENU - Navigace mezi sekcemi
+  3. CONFIG - Editace herních proměnných
+  4. USER CONTROL - Správa hráčů
+  5. BROADCAST - Systémové zprávy
+  6. EMERGENCY - Maintenance mode
+  7. LOGS - Historie akcí
+
+  PLACEHOLDER poznámky jsou označeny komentáři.
+  =============================================================================
+  -->
+
+  <div class="admin-container">
+
+    <!-- ===================================================================
+         HEADER - SYSTEM STATUS BAR
+         Live monitoring data z /api/admin/status
+    =================================================================== -->
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <span class="admin-logo">ROOT_TERMINAL</span>
+        <span class="admin-version">v0.1</span>
+      </div>
+
+      <div class="admin-header-center">
+        <!-- Live status indikátory -->
+        <div class="status-item">
+          <span class="status-label">SYSTEM:</span>
+          <span class="status-value" id="status-system">OFFLINE</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">TICKS:</span>
+          <span class="status-value" id="status-ticks">--</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">DELTA:</span>
+          <span class="status-value" id="status-delta">--</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">USERS:</span>
+          <span class="status-value" id="status-users">0</span>
+        </div>
+      </div>
+
+      <div class="admin-header-right">
+        <button class="btn btn-danger" onclick="handleLogout()">[ LOGOUT ]</button>
+      </div>
+    </header>
+
+    <!-- ===================================================================
+         MAIN CONTENT AREA
+    =================================================================== -->
+    <main class="admin-main">
+
+      <!-- ===================================================================
+           NAVIGATION MENU
+           Přepínání mezi sekcemi admin panelu
+      =================================================================== -->
+      <nav class="admin-nav">
+        <span class="nav-prompt">&gt; SELECTION:</span>
+        <button class="admin-nav-btn active" data-section="config">[1] GLOBAL VARIABLES</button>
+        <button class="admin-nav-btn" data-section="users">[2] PLAYER MANAGEMENT</button>
+        <button class="admin-nav-btn" data-section="broadcast">[3] BROADCAST</button>
+        <button class="admin-nav-btn" data-section="emergency">[4] EMERGENCY</button>
+      </nav>
+
+      <!-- ===================================================================
+           SECTION 1: GLOBAL VARIABLES (CONFIG)
+           Editace herních proměnných
+      =================================================================== -->
+      <section class="admin-section" id="section-config">
+        <div class="section-header">
+          <span class="section-title">&gt; ACTIVE CONFIGURATION</span>
+          <span class="section-hint">(Edit & Press ENTER to Apply)</span>
+        </div>
+
+        <form id="config-form" class="config-form">
+
+          <!-- ECONOMY sekce -->
+          <div class="config-group">
+            <div class="config-group-header">[ ECONOMY ]</div>
+
+            <div class="config-row">
+              <label for="cfg-electricity">electricity_cost_usd:</label>
+              <input type="number" id="cfg-electricity" step="0.01" min="0" value="0.12"
+                     data-section="economy" data-key="electricityCostUsd">
+              <span class="config-hint">(Cena za Watt/h)</span>
+            </div>
+
+            <div class="config-row">
+              <label for="cfg-hashrate-mult">global_hashrate_mult:</label>
+              <input type="number" id="cfg-hashrate-mult" step="0.01" min="0" value="1.00"
+                     data-section="economy" data-key="globalHashrateMult">
+              <span class="config-hint">(Nasobic tezby - Eventy)</span>
+            </div>
+
+            <div class="config-row">
+              <label for="cfg-volatility">market_volatility:</label>
+              <input type="number" id="cfg-volatility" step="0.01" min="0" max="1" value="0.05"
+                     data-section="economy" data-key="marketVolatility">
+              <span class="config-hint">(5% = 0.05)</span>
+            </div>
+          </div>
+
+          <!-- GAMEPLAY sekce -->
+          <div class="config-group">
+            <div class="config-group-header">[ GAMEPLAY ]</div>
+
+            <div class="config-row">
+              <label for="cfg-ddos-power">ddos_power_percent:</label>
+              <input type="number" id="cfg-ddos-power" step="1" min="0" max="100" value="15"
+                     data-section="gameplay" data-key="ddosPowerPercent">
+              <span class="config-hint">(% snizeni vykonu)</span>
+            </div>
+
+            <div class="config-row">
+              <label for="cfg-ddos-duration">ddos_duration_min:</label>
+              <input type="number" id="cfg-ddos-duration" step="1" min="1" value="60"
+                     data-section="gameplay" data-key="ddosDurationMin">
+              <span class="config-hint">(Trvani utoku v min)</span>
+            </div>
+
+            <div class="config-row">
+              <label for="cfg-pool-max">max_pool_members:</label>
+              <input type="number" id="cfg-pool-max" step="1" min="1" value="20"
+                     data-section="gameplay" data-key="maxPoolMembers">
+              <span class="config-hint">(Cap na pool)</span>
+            </div>
+          </div>
+
+          <!-- SYSTEM sekce -->
+          <div class="config-group">
+            <div class="config-group-header">[ SYSTEM ]</div>
+
+            <div class="config-row">
+              <label for="cfg-tick-interval">tick_interval_ms:</label>
+              <input type="number" id="cfg-tick-interval" step="1000" min="1000" value="10000"
+                     data-section="system" data-key="tickInterval">
+              <span class="config-hint">(10000 = 10s)</span>
+            </div>
+
+            <div class="config-row">
+              <label for="cfg-price-interval">price_update_ms:</label>
+              <input type="number" id="cfg-price-interval" step="1000" min="10000" value="60000"
+                     data-section="system" data-key="priceUpdateInterval">
+              <span class="config-hint">(60000 = 60s)</span>
+            </div>
+          </div>
+
+          <!-- MANUAL OVERRIDE sekce -->
+          <div class="config-group">
+            <div class="config-group-header">[ MANUAL OVERRIDE ]</div>
+
+            <div class="config-row">
+              <label for="cfg-force-btc">force_btc_price:</label>
+              <input type="number" id="cfg-force-btc" step="1" min="0" value="0"
+                     data-section="override" data-key="forceBtcPrice">
+              <span class="config-hint">(0 = Use API, &gt;0 = Fix Price)</span>
+            </div>
+
+            <div class="config-row">
+              <label for="cfg-force-eth">force_eth_price:</label>
+              <input type="number" id="cfg-force-eth" step="1" min="0" value="0"
+                     data-section="override" data-key="forceEthPrice">
+              <span class="config-hint">(0 = Use API)</span>
+            </div>
+
+            <div class="config-row">
+              <label for="cfg-force-xmr">force_xmr_price:</label>
+              <input type="number" id="cfg-force-xmr" step="1" min="0" value="0"
+                     data-section="override" data-key="forceXmrPrice">
+              <span class="config-hint">(0 = Use API)</span>
+            </div>
+          </div>
+
+          <!-- Akční tlačítka -->
+          <div class="config-actions">
+            <button type="submit" class="btn btn-danger">[ EXECUTE CHANGES ]</button>
+            <button type="button" class="btn" onclick="loadConfig()">[ RELOAD CONFIG ]</button>
+            <button type="button" class="btn" onclick="refreshPrices()">[ RELOAD API PRICES ]</button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- ===================================================================
+           SECTION 2: PLAYER MANAGEMENT (USER CONTROL)
+           Kick, Ban, Gift resources
+      =================================================================== -->
+      <section class="admin-section hidden" id="section-users">
+        <div class="section-header">
+          <span class="section-title">&gt; PLAYER MANAGEMENT</span>
+          <span class="section-hint">(Enter Player Name/ID)</span>
+        </div>
+
+        <div class="user-control-panel">
+
+          <!-- Vyhledávací pole -->
+          <div class="user-search">
+            <label for="user-input">TARGET:</label>
+            <input type="text" id="user-input" placeholder="Username or ID...">
+          </div>
+
+          <!-- Akční tlačítka -->
+          <div class="user-actions">
+            <button class="btn btn-warning" onclick="kickUser()">[ KICK ]</button>
+            <button class="btn btn-danger" onclick="banUser()">[ BAN ]</button>
+            <button class="btn" onclick="unbanUser()">[ UNBAN ]</button>
+          </div>
+
+          <hr class="separator">
+
+          <!-- Gift Resources -->
+          <div class="gift-panel">
+            <div class="config-group-header">[ GIFT RESOURCES ]</div>
+            <p class="hint-text">Pro testovani - prida suroviny hracovi</p>
+
+            <div class="gift-row">
+              <label for="gift-btc">BTC Amount:</label>
+              <input type="number" id="gift-btc" step="0.0001" min="0" value="0.01">
+            </div>
+
+            <div class="gift-row">
+              <label for="gift-hashrate">Hashrate (MH/s):</label>
+              <input type="number" id="gift-hashrate" step="1" min="0" value="100">
+            </div>
+
+            <button class="btn btn-success" onclick="giftResources()">[ SEND GIFT ]</button>
+          </div>
+
+          <hr class="separator">
+
+          <!--
+          PLACEHOLDER: Seznam uživatelů
+          Tato sekce by měla zobrazovat tabulku hráčů z DB.
+          Aktuálně je prázdná - čeká na implementaci DB.
+          -->
+          <div class="user-list-placeholder">
+            <p class="hint-text">&gt; USER LIST: [PLACEHOLDER - DB not implemented]</p>
+            <p class="hint-text">&gt; Search and user table will appear here</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SECTION 3: BROADCAST
+           Systémové zprávy všem hráčům
+      =================================================================== -->
+      <section class="admin-section hidden" id="section-broadcast">
+        <div class="section-header">
+          <span class="section-title">&gt; SYSTEM BROADCAST</span>
+          <span class="section-hint">(Send message to all players)</span>
+        </div>
+
+        <div class="broadcast-panel">
+          <div class="config-row">
+            <label for="broadcast-type">Message Type:</label>
+            <select id="broadcast-type">
+              <option value="info">INFO (Blue)</option>
+              <option value="warning">WARNING (Orange)</option>
+              <option value="danger">DANGER (Red)</option>
+            </select>
+          </div>
+
+          <div class="broadcast-message-wrap">
+            <label for="broadcast-message">Message:</label>
+            <textarea id="broadcast-message" rows="4"
+                      placeholder="Enter system message..."></textarea>
+          </div>
+
+          <button class="btn btn-warning" onclick="sendBroadcast()">[ BROADCAST MESSAGE ]</button>
+
+          <!--
+          PLACEHOLDER: Historie broadcastů
+          Mohla by zde být tabulka s historií odeslaných zpráv
+          -->
+          <div class="broadcast-history-placeholder">
+            <p class="hint-text mt-xl">&gt; BROADCAST HISTORY: [PLACEHOLDER]</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SECTION 4: EMERGENCY
+           Maintenance mode, Engine control
+      =================================================================== -->
+      <section class="admin-section hidden" id="section-emergency">
+        <div class="section-header">
+          <span class="section-title">&gt; EMERGENCY CONTROLS</span>
+          <span class="section-hint">(Use with caution!)</span>
+        </div>
+
+        <div class="emergency-panel">
+
+          <!-- Maintenance Mode -->
+          <div class="emergency-group">
+            <div class="config-group-header text-danger">[ MAINTENANCE MODE ]</div>
+
+            <div class="maintenance-status">
+              <span>Current Status:</span>
+              <span class="status-badge" id="maintenance-status">DISABLED</span>
+            </div>
+
+            <div class="config-row">
+              <label for="maintenance-reason">Reason:</label>
+              <input type="text" id="maintenance-reason" placeholder="Scheduled maintenance...">
+            </div>
+
+            <div class="emergency-actions">
+              <button class="btn btn-danger" onclick="enableMaintenance()">[ ENABLE MAINTENANCE ]</button>
+              <button class="btn btn-success" onclick="disableMaintenance()">[ DISABLE MAINTENANCE ]</button>
+            </div>
+          </div>
+
+          <hr class="separator">
+
+          <!-- Engine Control -->
+          <div class="emergency-group">
+            <div class="config-group-header text-danger">[ ENGINE CONTROL ]</div>
+            <p class="hint-text text-danger">VAROVANI: Zastaveni enginu pozastavi vsechny herni operace!</p>
+
+            <div class="maintenance-status">
+              <span>Engine Status:</span>
+              <span class="status-badge" id="engine-status">UNKNOWN</span>
+            </div>
+
+            <div class="emergency-actions">
+              <button class="btn btn-success" onclick="startEngine()">[ START ENGINE ]</button>
+              <button class="btn btn-danger" onclick="stopEngine()">[ STOP ENGINE ]</button>
+              <button class="btn btn-warning" onclick="restartEngine()">[ RESTART ENGINE ]</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           LOGS PANEL
+           Vždy viditelný ve spodní části
+      =================================================================== -->
+      <aside class="admin-logs">
+        <div class="logs-header">
+          <span>&gt; LOGS:</span>
+          <button class="btn btn-sm" onclick="refreshLogs()">[ REFRESH ]</button>
+        </div>
+        <div class="logs-content" id="logs-content">
+          <p class="log-entry">Loading logs...</p>
+        </div>
+      </aside>
+
+    </main>
+
+  </div>
+
+  <!-- =======================================================================
+       JAVASCRIPT
+       Veškerá logika admin panelu
+  ======================================================================= -->
+  <script>
+    /**
+     * =========================================================================
+     * MINEOPS ADMIN PANEL - JavaScript
+     * =========================================================================
+     *
+     * Tento soubor obsahuje veškerou klientskou logiku pro admin panel.
+     *
+     * Funkce:
+     * - Načítání a zobrazování stavu serveru
+     * - Editace a ukládání konfigurace
+     * - User management (kick, ban, gift)
+     * - Broadcast zpráv
+     * - Emergency controls
+     *
+     * PLACEHOLDER: Některé funkce čekají na implementaci backend API
+     * =========================================================================
+     */
+
+    // =========================================================================
+    // CONSTANTS & STATE
+    // =========================================================================
+
+    const API_BASE = '/api/admin';
+
+    // Interval pro auto-refresh status (5s)
+    const STATUS_REFRESH_INTERVAL = 5000;
+
+    // Interval pro auto-refresh logs (10s)
+    const LOGS_REFRESH_INTERVAL = 10000;
+
+    let statusIntervalId = null;
+    let logsIntervalId = null;
+
+    // =========================================================================
+    // UTILITY FUNCTIONS
+    // =========================================================================
+
+    /**
+     * Wrapper pro fetch s error handling
+     */
+    async function apiCall(endpoint, options = {}) {
+      try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+          },
+          ...options,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || data.message || 'API Error');
+        }
+
+        return data;
+
+      } catch (error) {
+        console.error(`[Admin] API Error (${endpoint}):`, error);
+        showNotification(`Error: ${error.message}`, 'danger');
+        throw error;
+      }
+    }
+
+    /**
+     * Zobrazí notifikaci (jednoduché alert, v produkci by bylo toast)
+     * PLACEHOLDER: Implementovat hezčí toast notifikace
+     */
+    function showNotification(message, type = 'info') {
+      // Pro MVP použijeme console + krátký vizuální feedback
+      console.log(`[${type.toUpperCase()}] ${message}`);
+
+      // Dočasný vizuální feedback - flashnutí logs panelu
+      const logsPanel = document.querySelector('.admin-logs');
+      if (logsPanel) {
+        logsPanel.style.borderColor = type === 'danger' ? '#ff3848' :
+                                      type === 'warning' ? '#ff9640' :
+                                      type === 'success' ? '#00ff6a' : '#00d4ff';
+        setTimeout(() => {
+          logsPanel.style.borderColor = '';
+        }, 500);
+      }
+    }
+
+    /**
+     * Formátuje timestamp pro log
+     */
+    function formatTimestamp(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString('cs-CZ', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+
+    // =========================================================================
+    // NAVIGATION
+    // =========================================================================
+
+    /**
+     * Přepínání mezi sekcemi admin panelu
+     */
+    function initNavigation() {
+      const navButtons = document.querySelectorAll('.admin-nav-btn');
+      const sections = document.querySelectorAll('.admin-section');
+
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetSection = btn.dataset.section;
+
+          // Deaktivovat všechny buttony
+          navButtons.forEach(b => b.classList.remove('active'));
+
+          // Skrýt všechny sekce
+          sections.forEach(s => s.classList.add('hidden'));
+
+          // Aktivovat vybraný button a sekci
+          btn.classList.add('active');
+          document.getElementById(`section-${targetSection}`).classList.remove('hidden');
+        });
+      });
+    }
+
+    // =========================================================================
+    // STATUS MONITORING
+    // =========================================================================
+
+    /**
+     * Načte a zobrazí status serveru
+     */
+    async function loadStatus() {
+      try {
+        const response = await apiCall('/status');
+
+        if (response.success) {
+          const data = response.data;
+          const summary = data.summary;
+
+          // Aktualizace status indikátorů
+          updateStatusIndicator('status-system', summary.isOnline ? 'ONLINE' : 'OFFLINE', summary.isOnline);
+          updateStatusIndicator('status-ticks', `${summary.tickInterval / 1000}s`);
+          updateStatusIndicator('status-delta', `${summary.lastTickDelta}ms`, summary.lastTickDelta < summary.tickInterval * 1.5);
+          updateStatusIndicator('status-users', summary.activeConnections);
+
+          // Aktualizace engine status
+          const engineBadge = document.getElementById('engine-status');
+          if (engineBadge) {
+            engineBadge.textContent = summary.isOnline ? 'RUNNING' : 'STOPPED';
+            engineBadge.className = `status-badge ${summary.isOnline ? 'status-good' : 'status-danger'}`;
+          }
+
+          // Aktualizace maintenance status
+          const maintBadge = document.getElementById('maintenance-status');
+          if (maintBadge) {
+            maintBadge.textContent = summary.maintenanceMode ? 'ENABLED' : 'DISABLED';
+            maintBadge.className = `status-badge ${summary.maintenanceMode ? 'status-danger' : 'status-good'}`;
+          }
+        }
+
+      } catch (error) {
+        updateStatusIndicator('status-system', 'ERROR', false);
+      }
+    }
+
+    /**
+     * Aktualizuje status indikátor
+     */
+    function updateStatusIndicator(id, value, isGood = true) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+        element.className = `status-value ${isGood ? 'status-good' : 'status-danger'}`;
+      }
+    }
+
+    /**
+     * Spustí auto-refresh status
+     */
+    function startStatusRefresh() {
+      loadStatus();
+      statusIntervalId = setInterval(loadStatus, STATUS_REFRESH_INTERVAL);
+    }
+
+    // =========================================================================
+    // CONFIGURATION
+    // =========================================================================
+
+    /**
+     * Načte konfiguraci ze serveru a naplní formulář
+     */
+    async function loadConfig() {
+      try {
+        const response = await apiCall('/config');
+
+        if (response.success) {
+          const config = response.data;
+
+          // Naplnění inputů
+          setInputValue('cfg-electricity', config.economy.electricityCostUsd);
+          setInputValue('cfg-hashrate-mult', config.economy.globalHashrateMult);
+          setInputValue('cfg-volatility', config.economy.marketVolatility);
+          setInputValue('cfg-ddos-power', config.gameplay.ddosPowerPercent);
+          setInputValue('cfg-ddos-duration', config.gameplay.ddosDurationMin);
+          setInputValue('cfg-pool-max', config.gameplay.maxPoolMembers);
+          setInputValue('cfg-tick-interval', config.system.tickInterval);
+          setInputValue('cfg-price-interval', config.system.priceUpdateInterval);
+          setInputValue('cfg-force-btc', config.override.forceBtcPrice);
+          setInputValue('cfg-force-eth', config.override.forceEthPrice);
+          setInputValue('cfg-force-xmr', config.override.forceXmrPrice);
+
+          showNotification('Config loaded', 'success');
+        }
+
+      } catch (error) {
+        console.error('Failed to load config:', error);
+      }
+    }
+
+    /**
+     * Pomocná funkce pro nastavení hodnoty inputu
+     */
+    function setInputValue(id, value) {
+      const input = document.getElementById(id);
+      if (input) {
+        input.value = value;
+      }
+    }
+
+    /**
+     * Odešle změny konfigurace na server
+     */
+    async function saveConfig(event) {
+      event.preventDefault();
+
+      // Sbírání všech změn z inputů
+      const inputs = document.querySelectorAll('#config-form input[data-section]');
+      const updates = [];
+
+      inputs.forEach(input => {
+        const section = input.dataset.section;
+        const key = input.dataset.key;
+        let value = input.type === 'number' ? parseFloat(input.value) : input.value;
+
+        updates.push({ section, key, value });
+      });
+
+      try {
+        const response = await apiCall('/config', {
+          method: 'POST',
+          body: JSON.stringify({ updates }),
+        });
+
+        if (response.success) {
+          showNotification('Config saved successfully', 'success');
+          refreshLogs();
+        }
+
+      } catch (error) {
+        showNotification('Failed to save config', 'danger');
+      }
+    }
+
+    /**
+     * Vynutí obnovení cen z API
+     */
+    async function refreshPrices() {
+      try {
+        const response = await apiCall('/prices/refresh', { method: 'POST' });
+
+        if (response.success) {
+          showNotification(`Prices refreshed: BTC=$${response.prices.bitcoin.usd}`, 'success');
+          refreshLogs();
+        }
+
+      } catch (error) {
+        showNotification('Failed to refresh prices', 'danger');
+      }
+    }
+
+    // =========================================================================
+    // USER MANAGEMENT
+    // =========================================================================
+
+    /**
+     * Získá hodnotu z user inputu
+     */
+    function getUserTarget() {
+      const input = document.getElementById('user-input');
+      const value = input ? input.value.trim() : '';
+
+      if (!value) {
+        showNotification('Enter username or ID', 'warning');
+        return null;
+      }
+
+      // Pokud je to číslo, použijeme jako ID
+      const isId = /^\d+$/.test(value);
+      return isId ? { userId: parseInt(value) } : { username: value };
+    }
+
+    /**
+     * Kickne uživatele
+     */
+    async function kickUser() {
+      const target = getUserTarget();
+      if (!target) return;
+
+      if (!confirm(`Kick user ${target.username || target.userId}?`)) return;
+
+      try {
+        const response = await apiCall('/user/kick', {
+          method: 'POST',
+          body: JSON.stringify(target),
+        });
+
+        showNotification(response.message, 'success');
+        refreshLogs();
+
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    /**
+     * Zabanuje uživatele
+     */
+    async function banUser() {
+      const target = getUserTarget();
+      if (!target) return;
+
+      const reason = prompt('Ban reason:');
+      if (reason === null) return; // Cancelled
+
+      if (!confirm(`BAN user ${target.username || target.userId}?`)) return;
+
+      try {
+        const response = await apiCall('/user/ban', {
+          method: 'POST',
+          body: JSON.stringify({ ...target, reason }),
+        });
+
+        showNotification(response.message, 'success');
+        refreshLogs();
+
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    /**
+     * Odbanuje uživatele
+     */
+    async function unbanUser() {
+      const target = getUserTarget();
+      if (!target) return;
+
+      if (!confirm(`Unban user ${target.username || target.userId}?`)) return;
+
+      try {
+        const response = await apiCall('/user/unban', {
+          method: 'POST',
+          body: JSON.stringify(target),
+        });
+
+        showNotification(response.message, 'success');
+        refreshLogs();
+
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    /**
+     * Daruje resources uživateli
+     */
+    async function giftResources() {
+      const target = getUserTarget();
+      if (!target) return;
+
+      const btc = parseFloat(document.getElementById('gift-btc').value) || 0;
+      const hashrate = parseFloat(document.getElementById('gift-hashrate').value) || 0;
+
+      if (btc <= 0 && hashrate <= 0) {
+        showNotification('Enter BTC or hashrate amount', 'warning');
+        return;
+      }
+
+      if (!confirm(`Gift ${btc} BTC + ${hashrate} MH/s to ${target.username || target.userId}?`)) return;
+
+      try {
+        const response = await apiCall('/user/gift', {
+          method: 'POST',
+          body: JSON.stringify({ ...target, btc, hashrate }),
+        });
+
+        showNotification(response.message, 'success');
+        refreshLogs();
+
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    // =========================================================================
+    // BROADCAST
+    // =========================================================================
+
+    /**
+     * Odešle broadcast zprávu
+     */
+    async function sendBroadcast() {
+      const message = document.getElementById('broadcast-message').value.trim();
+      const type = document.getElementById('broadcast-type').value;
+
+      if (!message) {
+        showNotification('Enter message', 'warning');
+        return;
+      }
+
+      if (!confirm('Send this broadcast to all players?')) return;
+
+      try {
+        const response = await apiCall('/broadcast', {
+          method: 'POST',
+          body: JSON.stringify({ message, type }),
+        });
+
+        showNotification('Broadcast sent', 'success');
+        document.getElementById('broadcast-message').value = '';
+        refreshLogs();
+
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    // =========================================================================
+    // EMERGENCY CONTROLS
+    // =========================================================================
+
+    /**
+     * Zapne maintenance mode
+     */
+    async function enableMaintenance() {
+      const reason = document.getElementById('maintenance-reason').value.trim() || 'Scheduled maintenance';
+
+      if (!confirm('Enable maintenance mode? All players will be notified.')) return;
+
+      try {
+        const response = await apiCall('/maintenance', {
+          method: 'POST',
+          body: JSON.stringify({ enabled: true, reason }),
+        });
+
+        showNotification('Maintenance mode ENABLED', 'warning');
+        loadStatus();
+        refreshLogs();
+
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    /**
+     * Vypne maintenance mode
+     */
+    async function disableMaintenance() {
+      if (!confirm('Disable maintenance mode?')) return;
+
+      try {
+        const response = await apiCall('/maintenance', {
+          method: 'POST',
+          body: JSON.stringify({ enabled: false }),
+        });
+
+        showNotification('Maintenance mode DISABLED', 'success');
+        loadStatus();
+        refreshLogs();
+
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    /**
+     * Spustí engine
+     */
+    async function startEngine() {
+      try {
+        const response = await apiCall('/engine/start', { method: 'POST' });
+        showNotification(response.message, 'success');
+        loadStatus();
+        refreshLogs();
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    /**
+     * Zastaví engine
+     */
+    async function stopEngine() {
+      if (!confirm('STOP game engine? All mining operations will pause!')) return;
+
+      try {
+        const response = await apiCall('/engine/stop', { method: 'POST' });
+        showNotification(response.message, 'warning');
+        loadStatus();
+        refreshLogs();
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    /**
+     * Restartuje engine
+     */
+    async function restartEngine() {
+      if (!confirm('Restart game engine?')) return;
+
+      try {
+        const response = await apiCall('/engine/restart', { method: 'POST' });
+        showNotification(response.message, 'success');
+        loadStatus();
+        refreshLogs();
+      } catch (error) {
+        // Error handled in apiCall
+      }
+    }
+
+    // =========================================================================
+    // LOGS
+    // =========================================================================
+
+    /**
+     * Načte a zobrazí admin log
+     */
+    async function refreshLogs() {
+      try {
+        const response = await apiCall('/logs?limit=20');
+
+        if (response.success) {
+          const logsContainer = document.getElementById('logs-content');
+          if (!logsContainer) return;
+
+          if (response.data.length === 0) {
+            logsContainer.innerHTML = '<p class="log-entry text-muted">No logs yet...</p>';
+            return;
+          }
+
+          logsContainer.innerHTML = response.data.map(log => `
+            <p class="log-entry">
+              <span class="log-time">${formatTimestamp(log.timestamp)}</span>
+              <span class="log-admin">[${log.admin}]</span>
+              <span class="log-action">${log.action}</span>
+            </p>
+          `).join('');
+        }
+
+      } catch (error) {
+        console.error('Failed to load logs:', error);
+      }
+    }
+
+    /**
+     * Spustí auto-refresh logs
+     */
+    function startLogsRefresh() {
+      refreshLogs();
+      logsIntervalId = setInterval(refreshLogs, LOGS_REFRESH_INTERVAL);
+    }
+
+    // =========================================================================
+    // LOGOUT
+    // =========================================================================
+
+    /**
+     * Odhlášení z admin panelu
+     * PLACEHOLDER: Implementovat skutečné odhlášení po přidání auth
+     */
+    function handleLogout() {
+      if (confirm('Logout from admin panel?')) {
+        // PLACEHOLDER: Zničit session
+        window.location.href = '/';
+      }
+    }
+
+    // =========================================================================
+    // INITIALIZATION
+    // =========================================================================
+
+    /**
+     * Inicializace admin panelu
+     */
+    function init() {
+      console.log('[Admin] Initializing ROOT_TERMINAL v0.1...');
+
+      // Inicializace navigace
+      initNavigation();
+
+      // Načtení dat
+      loadConfig();
+      startStatusRefresh();
+      startLogsRefresh();
+
+      // Form submit handler
+      const configForm = document.getElementById('config-form');
+      if (configForm) {
+        configForm.addEventListener('submit', saveConfig);
+      }
+
+      console.log('[Admin] Initialization complete');
+    }
+
+    // Spustit po načtení DOM
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+</body>
+</html>
