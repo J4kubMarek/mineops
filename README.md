@@ -8,24 +8,45 @@
 
 ---
 
-## O hře
+## O hre
 
-MINEOPS je webová idle hra, kde hráči:
-- ⛏️ Simulovaně těží kryptoměny
-- 🖥️ Vylepšují svůj těžební hardware
-- 🤝 Seskupují se v mining poolech
-- 🔬 Provádějí výzkum technologií
-- ⚔️ Soutěží a sabotují ostatní hráče
+MINEOPS je webova idle hra, kde hraci:
+- Simulovane tezi kryptomeny (BTC, DOGE, XMR)
+- Vylepsuju svuj tezebni hardware
+- Seskupuji se v mining poolech
+- Provadeji vyzkum technologii
+- Soutezi a sabotuji ostatni hrace
 
 ### Design
 
-Retro terminal UI inspirované:
+Retro terminal UI inspirovane:
 - Game Boy Color menu
 - MS-DOS aplikace (Norton Commander)
 - Bloomberg Terminal
 - Hrami jako Defcon, Papers Please
 
-Více v: [`docs/VISUAL_DESIGN.md`](docs/VISUAL_DESIGN.md)
+Vice v: [`docs/VISUAL_DESIGN.md`](docs/VISUAL_DESIGN.md)
+
+### Hardware Market
+
+Hra nabizi 4 kategorie tezebnich zarizeni:
+
+| Kategorie | Algoritmus | Mena | Priklad |
+|-----------|------------|------|---------|
+| BTC ASIC | SHA-256 | Bitcoin | S19 Pro, S21 Hydro |
+| DOGE ASIC | Scrypt | Dogecoin | L7 Master, L9 X-treme |
+| XMR ASIC | RandomX | Monero | Ryzen Beast, Threadripper X |
+| SOLO | SHA-256 | Bitcoin | Bitaxe Ultra, Bitaxe Gamma |
+
+### Menovy system
+
+- **USD** - Hlavni platebni mena pro nakupy a poplatky
+- **BTC** - Vytezena kryptomena, prodava se za USD
+
+Hraci ziskavaji USD prodejem vytezeneho BTC a plati za:
+- Nakup hardwaru
+- Ucty za elektrinu (planovano)
+- Najem prostoru (planovano)
 
 ---
 
@@ -94,19 +115,28 @@ npm run migrate  # Spustit databázové migrace
 
 ```
 mineops/
-├── backend/         # Backend logika (routes, controllers, models)
-├── config/          # Konfigurace (database connection)
-├── docs/            # Dokumentace
-├── migrations/      # SQL migrace
-├── public/          # Statické soubory (CSS, JS, assets)
-├── scripts/         # Utility skripty (migrace, atd.)
-├── views/           # HTML stránky a komponenty
-├── .env             # Environment variables (gitignored)
+├── backend/
+│   ├── config/          # Herni konfigurace (gameConfig.js)
+│   ├── engine/          # Herni engine (tick system)
+│   ├── routes/          # API endpointy
+│   │   ├── api.js       # Zakladni API (health, prices)
+│   │   ├── admin.js     # Admin panel API
+│   │   └── hardware.js  # Hardware market API
+│   └── services/        # Externi sluzby (ceny kryptoměn)
+├── config/              # Konfigurace (database connection)
+├── docs/                # Dokumentace
+├── migrations/          # SQL migrace
+│   ├── 001_create_users_table.sql
+│   └── 002_add_hardware_and_usd_balance.sql
+├── public/              # Staticke soubory (CSS, JS)
+├── scripts/             # Utility skripty
+├── views/               # HTML stranky a komponenty
+├── .env                 # Environment variables (gitignored)
 ├── package.json
-└── server.js        # Entry point
+└── server.js            # Entry point
 ```
 
-Detailní popis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+Detailni popis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 ---
 
@@ -137,17 +167,21 @@ Detailní popis: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 ## Roadmap
 
-- [x] Základní struktura projektu
-- [x] Design systém a UI komponenty
-- [x] Databázové migrace
+- [x] Zakladni struktura projektu
+- [x] Design system a UI komponenty
+- [x] Databazove migrace
+- [x] Hardware Market s 4 kategoriemi (BTC ASIC, DOGE ASIC, XMR ASIC, SOLO)
+- [x] USD menovy system
+- [x] Nakupni mechanika s tranakcemi
 - [ ] User autentizace
-- [ ] Základní mining mechanika
-- [ ] Hardware shop
+- [ ] Zakladni mining mechanika
+- [ ] Prodej BTC za USD
 - [ ] Mining pools
+- [ ] Elektrina a provozni naklady
 - [ ] Research tree
 - [ ] PvP sabotage
 
-Více v: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#roadmap)
+Vice v: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md#roadmap)
 
 ---
 
@@ -220,4 +254,4 @@ Pro bugy a feature requesty použij GitHub Issues.
 
 ---
 
-**Happy mining! ⛏️💎**
+**Happy mining!**

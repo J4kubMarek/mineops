@@ -73,6 +73,9 @@ app.get('/components/:component', (req, res) => {
 // API Routes (pro budoucí použití)
 app.use('/api', require('./backend/routes/api'));
 
+// Hardware API Routes - nakup a sprava hardwaru
+app.use('/api', require('./backend/routes/hardware'));
+
 // Admin API Routes
 app.use('/api/admin', require('./backend/routes/admin'));
 

@@ -5,6 +5,286 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MINEOPS - Market</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* =============================================================================
+       MARKET PAGE - Tab a Shop system
+       ============================================================================= */
+
+    /* Tabs navigace */
+    .market-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--panel-border);
+      background: var(--bg);
+    }
+
+    .market-tab {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: var(--space-lg) var(--space-xl);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 100ms linear;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .market-tab:hover {
+      color: var(--accent);
+      background: var(--panel-light);
+    }
+
+    .market-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: var(--panel);
+    }
+
+    /* Tab content kontejnery */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Hardware tabulka */
+    .hardware-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .hardware-table th {
+      text-align: left;
+      padding: var(--space-md) var(--space-lg);
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      background: var(--bg);
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .hardware-table td {
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--panel-border);
+      vertical-align: middle;
+    }
+
+    .hardware-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .hardware-table tbody tr:hover {
+      background: var(--panel-light);
+    }
+
+    /* Hardware nazev */
+    .hw-name {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .hw-desc {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: var(--space-xs);
+    }
+
+    /* Hashrate hodnota */
+    .hw-hashrate {
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    /* Spotreba */
+    .hw-power {
+      font-weight: 500;
+      color: var(--accent-warn);
+      font-family: var(--font-mono);
+    }
+
+    /* Cena */
+    .hw-price {
+      font-weight: 700;
+      color: var(--accent-good);
+      font-size: 13px;
+      font-family: var(--font-mono);
+    }
+
+    /* Nakup tlacitko */
+    .btn-buy {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: var(--space-md) var(--space-xl);
+      background: transparent;
+      border: 1px solid var(--accent-good);
+      color: var(--accent-good);
+      cursor: pointer;
+      transition: all 100ms linear;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-buy:hover {
+      background: var(--accent-good);
+      color: var(--bg);
+    }
+
+    .btn-buy:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      border-color: var(--text-dim);
+      color: var(--text-dim);
+    }
+
+    .btn-buy:disabled:hover {
+      background: transparent;
+      color: var(--text-dim);
+    }
+
+    /* User wallet panel */
+    .wallet-panel {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xl);
+      padding: var(--space-lg);
+      background: var(--panel-light);
+      border: 1px solid var(--panel-border);
+      margin-bottom: var(--space-lg);
+    }
+
+    .wallet-item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .wallet-label {
+      font-size: 8px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+    }
+
+    .wallet-value {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .wallet-value.usd {
+      color: var(--accent-good);
+    }
+
+    .wallet-value.btc {
+      color: var(--accent-warn);
+    }
+
+    /* Status zpravy */
+    .purchase-status {
+      padding: var(--space-lg);
+      margin-top: var(--space-lg);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .purchase-status.success {
+      display: block;
+      background: rgba(0, 255, 106, 0.1);
+      border: 1px solid var(--accent-good);
+      color: var(--accent-good);
+    }
+
+    .purchase-status.error {
+      display: block;
+      background: rgba(255, 56, 72, 0.1);
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+    }
+
+    /* Kategorie popisky */
+    .category-header {
+      padding: var(--space-lg);
+      background: var(--bg);
+      border-bottom: 1px dashed var(--panel-border);
+    }
+
+    .category-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .category-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: var(--space-xs);
+    }
+
+    /* Solo mining info box */
+    .solo-info {
+      padding: var(--space-lg);
+      background: var(--panel-light);
+      border: 1px dashed var(--accent-warn);
+      margin-bottom: var(--space-lg);
+    }
+
+    .solo-info p {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .solo-info p:last-child {
+      margin-bottom: 0;
+    }
+
+    .solo-info strong {
+      color: var(--accent-warn);
+    }
+
+    /* Loading stav */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 14, 26, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .loading-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      animation: pulse 1s steps(4) infinite;
+    }
+  </style>
 </head>
 <body>
   <!-- Sidebar Component -->
@@ -15,26 +295,375 @@
     <!-- Ticker Component -->
     <div id="ticker-container"></div>
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <span class="loading-text">PROCESSING...</span>
+    </div>
+
     <!-- Main Content -->
     <div class="container">
+      <!-- Header panel -->
       <div class="panel mb-lg">
         <div class="panel-header">
-          <h1>MARKET</h1>
+          <h1>HARDWARE MARKET</h1>
         </div>
         <div class="panel-content">
-          <p class="text-muted">Obchodování s kryptoměnami a hardware</p>
+          <p class="text-muted">Nakup tezebni hardware za USD. Dolary ziskas prodejem BTC.</p>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-content">
-          <p class="text-dim text-center">Market features coming soon...</p>
+      <!-- Wallet panel - zobrazuje zustatek uzivatele -->
+      <div class="wallet-panel">
+        <div class="wallet-item">
+          <span class="wallet-label">USD Balance</span>
+          <span class="wallet-value usd" id="walletUsd">$0.00</span>
         </div>
+        <div class="wallet-item">
+          <span class="wallet-label">BTC Balance</span>
+          <span class="wallet-value btc" id="walletBtc">0.00000000 BTC</span>
+        </div>
+      </div>
+
+      <!-- Market panel s tabs -->
+      <div class="panel">
+        <!-- Navigace mezi kategoriemi -->
+        <div class="market-tabs">
+          <button class="market-tab active" data-tab="btc-asic">BTC ASIC</button>
+          <button class="market-tab" data-tab="doge-asic">DOGE ASIC</button>
+          <button class="market-tab" data-tab="xmr-asic">XMR ASIC</button>
+          <button class="market-tab" data-tab="solo">SOLO</button>
+        </div>
+
+        <!-- BTC ASIC Tab -->
+        <div class="tab-content active" id="tab-btc-asic">
+          <div class="category-header">
+            <div class="category-title">Bitcoin ASIC Miners</div>
+            <div class="category-desc">Specializovany hardware pro tezbu Bitcoinu (SHA-256)</div>
+          </div>
+          <table class="hardware-table">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Hashrate</th>
+                <th>Spotreba</th>
+                <th>Cena</th>
+                <th>Akce</th>
+              </tr>
+            </thead>
+            <tbody id="btc-asic-items">
+              <!-- Hardware polozky budou nacteny z API -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- DOGE ASIC Tab -->
+        <div class="tab-content" id="tab-doge-asic">
+          <div class="category-header">
+            <div class="category-title">Dogecoin ASIC Miners</div>
+            <div class="category-desc">Scrypt mineri pro tezbu Dogecoinu a Litecoinu</div>
+          </div>
+          <table class="hardware-table">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Hashrate</th>
+                <th>Spotreba</th>
+                <th>Cena</th>
+                <th>Akce</th>
+              </tr>
+            </thead>
+            <tbody id="doge-asic-items">
+              <!-- Hardware polozky budou nacteny z API -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- XMR ASIC Tab -->
+        <div class="tab-content" id="tab-xmr-asic">
+          <div class="category-header">
+            <div class="category-title">Monero Mining Rigs</div>
+            <div class="category-desc">CPU mining pro Monero (RandomX algoritmus)</div>
+          </div>
+          <table class="hardware-table">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Hashrate</th>
+                <th>Spotreba</th>
+                <th>Cena</th>
+                <th>Akce</th>
+              </tr>
+            </thead>
+            <tbody id="xmr-asic-items">
+              <!-- Hardware polozky budou nacteny z API -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- SOLO Tab -->
+        <div class="tab-content" id="tab-solo">
+          <div class="category-header">
+            <div class="category-title">Solo Mining Hardware</div>
+            <div class="category-desc">Open-source Bitcoin solo mineri - loterie s obrovskou moznou vyplatou</div>
+          </div>
+          <!-- Info box pro solo mining -->
+          <div class="solo-info">
+            <p><strong>POZOR:</strong> Solo mining ma extemne nizkou sanci na nalezeni bloku.</p>
+            <p>Pokud vsak blok najdes, dostanes celou odmenu (aktualne 3.125 BTC).</p>
+            <p>Bitaxe je open-source projekt - podporujes decentralizaci site.</p>
+          </div>
+          <table class="hardware-table">
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Hashrate</th>
+                <th>Spotreba</th>
+                <th>Cena</th>
+                <th>Akce</th>
+              </tr>
+            </thead>
+            <tbody id="solo-items">
+              <!-- Hardware polozky budou nacteny z API -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Status zprava pro nakupy -->
+        <div class="purchase-status" id="purchaseStatus"></div>
       </div>
     </div>
   </div>
 
   <!-- Scripts -->
   <script src="/js/components.js"></script>
+  <script>
+    // ==========================================================================
+    // MARKET PAGE - JavaScript logika
+    // ==========================================================================
+
+    // Globalni stav uzivatele
+    let userWallet = {
+      usd: 0,
+      btc: 0
+    };
+
+    // ==========================================================================
+    // TAB NAVIGACE
+    // ==========================================================================
+    // Prepinani mezi kategoriemi hardwaru
+    document.querySelectorAll('.market-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Odstran aktivni stav ze vsech tabu
+        document.querySelectorAll('.market-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        // Aktivuj kliknty tab
+        tab.classList.add('active');
+        const tabId = 'tab-' + tab.dataset.tab;
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // ==========================================================================
+    // NACITANI DAT
+    // ==========================================================================
+    // Nacte hardware z API a naplni tabulky
+    async function loadHardware() {
+      try {
+        const response = await fetch('/api/hardware');
+        const data = await response.json();
+
+        if (data.success) {
+          // Rozdeleni hardwaru do kategorii
+          const categories = {
+            'btc_asic': 'btc-asic-items',
+            'doge_asic': 'doge-asic-items',
+            'xmr_asic': 'xmr-asic-items',
+            'solo': 'solo-items'
+          };
+
+          // Vymazani stavajiciho obsahu
+          Object.values(categories).forEach(id => {
+            document.getElementById(id).innerHTML = '';
+          });
+
+          // Naplneni tabulek
+          data.hardware.forEach(hw => {
+            const targetId = categories[hw.category];
+            if (targetId) {
+              const tbody = document.getElementById(targetId);
+              tbody.innerHTML += createHardwareRow(hw);
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error loading hardware:', error);
+      }
+    }
+
+    // Nacte zustatek uzivatele z API
+    async function loadWallet() {
+      try {
+        const response = await fetch('/api/user/wallet');
+        const data = await response.json();
+
+        if (data.success) {
+          userWallet = data.wallet;
+          updateWalletDisplay();
+        }
+      } catch (error) {
+        console.error('Error loading wallet:', error);
+      }
+    }
+
+    // ==========================================================================
+    // UI RENDERING
+    // ==========================================================================
+    // Vytvori radek tabulky pro hardware
+    function createHardwareRow(hw) {
+      const canAfford = userWallet.usd >= parseFloat(hw.price_usd);
+      const disabledClass = canAfford ? '' : 'disabled';
+      const disabledAttr = canAfford ? '' : 'disabled';
+
+      return `
+        <tr data-hw-id="${hw.id}">
+          <td>
+            <div class="hw-name">${escapeHtml(hw.name)}</div>
+            <div class="hw-desc">${escapeHtml(hw.description || '')}</div>
+          </td>
+          <td>
+            <span class="hw-hashrate">${formatHashrate(hw.hashrate, hw.hashrate_unit)}</span>
+          </td>
+          <td>
+            <span class="hw-power">${hw.power_consumption} W</span>
+          </td>
+          <td>
+            <span class="hw-price">$${formatNumber(hw.price_usd)}</span>
+          </td>
+          <td>
+            <button class="btn-buy" onclick="purchaseHardware(${hw.id})" ${disabledAttr}>
+              KOUPIT
+            </button>
+          </td>
+        </tr>
+      `;
+    }
+
+    // Aktualizuje zobrazeni penezeneky
+    function updateWalletDisplay() {
+      document.getElementById('walletUsd').textContent = '$' + formatNumber(userWallet.usd);
+      document.getElementById('walletBtc').textContent = formatBtc(userWallet.btc) + ' BTC';
+
+      // Aktualizuj stav tlacitek koupit
+      updateBuyButtons();
+    }
+
+    // Aktualizuje stav tlacitek podle zustatku
+    function updateBuyButtons() {
+      document.querySelectorAll('.hardware-table tbody tr').forEach(row => {
+        const priceText = row.querySelector('.hw-price').textContent;
+        const price = parseFloat(priceText.replace('$', '').replace(',', ''));
+        const btn = row.querySelector('.btn-buy');
+
+        if (userWallet.usd >= price) {
+          btn.disabled = false;
+        } else {
+          btn.disabled = true;
+        }
+      });
+    }
+
+    // ==========================================================================
+    // NAKUP HARDWARE
+    // ==========================================================================
+    // Zpracuje nakup hardwaru
+    async function purchaseHardware(hardwareId) {
+      const statusEl = document.getElementById('purchaseStatus');
+      const loadingEl = document.getElementById('loadingOverlay');
+
+      // Zobraz loading
+      loadingEl.classList.add('active');
+      statusEl.className = 'purchase-status';
+      statusEl.style.display = 'none';
+
+      try {
+        const response = await fetch('/api/hardware/purchase', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ hardware_id: hardwareId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Aktualizuj wallet
+          userWallet.usd = data.new_balance_usd;
+          updateWalletDisplay();
+
+          // Zobraz uspech
+          statusEl.textContent = 'NAKUP USPESNY: ' + data.message;
+          statusEl.className = 'purchase-status success';
+        } else {
+          // Zobraz chybu
+          statusEl.textContent = 'CHYBA: ' + data.message;
+          statusEl.className = 'purchase-status error';
+        }
+      } catch (error) {
+        statusEl.textContent = 'CHYBA SPOJENI: Nelze kontaktovat server';
+        statusEl.className = 'purchase-status error';
+      }
+
+      // Skryj loading a zobraz status
+      loadingEl.classList.remove('active');
+
+      // Automaticky skryj status po 5 sekundach
+      setTimeout(() => {
+        statusEl.className = 'purchase-status';
+        statusEl.style.display = 'none';
+      }, 5000);
+    }
+
+    // ==========================================================================
+    // POMOCNE FUNKCE
+    // ==========================================================================
+    // Formatuje hashrate s jednotkou
+    function formatHashrate(value, unit) {
+      return parseFloat(value).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }) + ' ' + unit;
+    }
+
+    // Formatuje cislo s carkami
+    function formatNumber(num) {
+      return parseFloat(num).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Formatuje BTC hodnotu
+    function formatBtc(num) {
+      return parseFloat(num).toFixed(8);
+    }
+
+    // Escape HTML pro prevenci XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ==========================================================================
+    // INICIALIZACE
+    // ==========================================================================
+    // Spusti se pri nacteni stranky
+    document.addEventListener('DOMContentLoaded', () => {
+      loadWallet();
+      loadHardware();
+    });
+  </script>
 </body>
 </html>

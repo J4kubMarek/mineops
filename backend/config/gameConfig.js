@@ -90,34 +90,71 @@ const GameConfig = {
   },
 
   // ===========================================================================
-  // HARDWARE - Nastavení těžebního hardwaru
+  // HARDWARE - Nastaveni tezebnich zarizeni
   // ===========================================================================
+  // Hardware je nyni ulozen v databazi (tabulka hardware_types)
+  // Tato konfigurace slouzi pro referencni hodnoty a vypocty
   hardware: {
-    // Base hashrate pro různé typy HW (MH/s)
-    // PLACEHOLDER: Reálné hodnoty budou v DB tabulce hardware_types
-    baseHashrates: {
-      cpu: 0.1,        // CPU mining - velmi pomalé
-      gpu_low: 25,     // Entry-level GPU
-      gpu_mid: 80,     // Mid-range GPU
-      gpu_high: 120,   // High-end GPU
-      asic_s9: 14000,  // Antminer S9
-      asic_s19: 95000, // Antminer S19 Pro
-    },
-
-    // Spotřeba energie v Wattech
-    // PLACEHOLDER: Reálné hodnoty budou v DB
-    powerConsumption: {
-      cpu: 65,
-      gpu_low: 120,
-      gpu_mid: 200,
-      gpu_high: 320,
-      asic_s9: 1350,
-      asic_s19: 3250,
+    // Kategorie hardwaru dostupne v obchode
+    categories: {
+      btc_asic: 'Bitcoin ASIC Miners (SHA-256)',
+      doge_asic: 'Dogecoin/Litecoin ASIC Miners (Scrypt)',
+      xmr_asic: 'Monero CPU Mining Rigs (RandomX)',
+      solo: 'Solo Bitcoin Mining (Bitaxe)',
     },
 
     // Degradace hardwaru za den (procenta)
-    // PLACEHOLDER: Pro systém opotřebení HW
+    // PLACEHOLDER: Pro system opotrebeni HW
     dailyDegradation: 0.1,
+
+    // Maximalni pocet kusu jednoho typu hardwaru na uzivatele
+    maxQuantityPerType: 100,
+  },
+
+  // ===========================================================================
+  // CURRENCY - Menovy system
+  // ===========================================================================
+  // Hra pouziva dve meny: BTC (vytezena kryptomena) a USD (platebni mena)
+  currency: {
+    // USD - hlavni platebni mena
+    // Ziskava se prodejem BTC, pouziva se na nakupy a poplatky
+    usd: {
+      // Startovaci balance pro nove hrace (pro testovani)
+      startingBalance: 10000.00,
+
+      // Minimalni vyse transakce
+      minTransaction: 0.01,
+    },
+
+    // BTC - vytezena kryptomena
+    // Ziskava se tezenim, prodava se za USD
+    btc: {
+      // Startovaci balance (0 - hrac musi tezit)
+      startingBalance: 0.00000000,
+
+      // Presnost zobrazeni (8 desetinnych mist)
+      decimalPlaces: 8,
+    },
+
+    // Poplatky za konverzi BTC -> USD (procento)
+    // TODO: Implementovat prodej BTC
+    btcSellFeePercent: 1.5,
+  },
+
+  // ===========================================================================
+  // COSTS - Provozni naklady (PLACEHOLDER)
+  // ===========================================================================
+  // Naklady ktere budou odecitany z USD balance uzivatele
+  costs: {
+    // Elektrina - cena za kWh v USD
+    electricityPerKwh: 0.12,
+
+    // Prostor/Hosting - mesicni najem za slot
+    // TODO: Implementovat system slotu
+    spaceRentPerSlot: 50.00,
+
+    // Interval uctovani elektriny (v hodinach)
+    electricityBillingInterval: 24,
   },
 
   // ===========================================================================
@@ -214,8 +251,8 @@ function updateConfig(section, key, value) {
 }
 
 /**
- * Vrátí aktuální konfiguraci (pro API response)
- * @returns {Object} - Kopie konfigurace bez citlivých dat
+ * Vrati aktualni konfiguraci (pro API response)
+ * @returns {Object} - Kopie konfigurace bez citlivych dat
  */
 function getConfig() {
   return {
@@ -223,6 +260,8 @@ function getConfig() {
     economy: { ...GameConfig.economy },
     gameplay: { ...GameConfig.gameplay },
     hardware: { ...GameConfig.hardware },
+    currency: { ...GameConfig.currency },
+    costs: { ...GameConfig.costs },
     research: { ...GameConfig.research },
     override: { ...GameConfig.override },
   };
