@@ -566,3 +566,551 @@ tbody tr:hover {
 .ticker-change.text-danger {
   color: var(--accent-danger);
 }
+
+/* =============================================================================
+   ADMIN PANEL - ROOT_TERMINAL v0.1
+   =============================================================================
+   Červené téma pro admin panel - signalizuje nebezpečné operace.
+   Inspirace: Mainframe terminal, hacker aesthetic
+   ============================================================================= */
+
+/* Admin Theme Override - Červená místo zelené */
+body.admin-theme {
+  --admin-primary: #ff3848;
+  --admin-primary-dim: #991525;
+  --admin-glow: rgba(255, 56, 72, 0.3);
+  background: #050508;
+}
+
+/* Admin Container - Full screen layout */
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a0508 0%, #050508 100%);
+}
+
+/* =============================================================================
+   ADMIN HEADER - Status Bar
+   ============================================================================= */
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-xl);
+  background: #0f0a0c;
+  border-bottom: 1px solid var(--admin-primary-dim);
+  box-shadow: 0 0 20px var(--admin-glow);
+}
+
+.admin-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.admin-logo {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--admin-primary);
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px var(--admin-glow);
+}
+
+.admin-version {
+  font-size: 9px;
+  color: var(--text-dim);
+  padding: 2px 6px;
+  border: 1px solid var(--panel-border);
+}
+
+.admin-header-center {
+  display: flex;
+  gap: var(--space-xl);
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 10px;
+}
+
+.status-label {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-value {
+  font-weight: 700;
+  color: var(--text);
+  min-width: 60px;
+}
+
+.status-value.status-good {
+  color: var(--accent-good);
+}
+
+.status-value.status-danger {
+  color: var(--admin-primary);
+}
+
+.admin-header-right {
+  display: flex;
+  gap: var(--space-md);
+}
+
+/* =============================================================================
+   ADMIN NAVIGATION
+   ============================================================================= */
+.admin-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--space-xl);
+  background: #0a0708;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.nav-prompt {
+  color: var(--admin-primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.admin-nav-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: var(--space-md) var(--space-lg);
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 100ms linear;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-nav-btn:hover {
+  border-color: var(--admin-primary);
+  color: var(--admin-primary);
+}
+
+.admin-nav-btn.active {
+  background: var(--admin-primary-dim);
+  border-color: var(--admin-primary);
+  color: var(--admin-primary);
+  box-shadow: 0 0 10px var(--admin-glow);
+}
+
+/* =============================================================================
+   ADMIN MAIN CONTENT
+   ============================================================================= */
+.admin-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-xl);
+  gap: var(--space-xl);
+}
+
+/* =============================================================================
+   ADMIN SECTIONS
+   ============================================================================= */
+.admin-section {
+  background: #0a0708;
+  border: 1px solid var(--panel-border);
+  padding: var(--space-xl);
+}
+
+.admin-section.hidden {
+  display: none;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px dashed var(--panel-border);
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--admin-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-hint {
+  font-size: 9px;
+  color: var(--text-dim);
+}
+
+/* =============================================================================
+   CONFIG FORM
+   ============================================================================= */
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.config-group {
+  background: #0f0a0c;
+  border: 1px solid var(--panel-border);
+  padding: var(--space-lg);
+}
+
+.config-group-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-warn);
+  margin-bottom: var(--space-lg);
+  letter-spacing: 1px;
+}
+
+.config-row {
+  display: grid;
+  grid-template-columns: 200px 120px 1fr;
+  gap: var(--space-lg);
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.config-row label {
+  font-size: 10px;
+  color: var(--text);
+  font-weight: 500;
+  text-align: right;
+}
+
+.config-row input,
+.config-row select {
+  background: #050508;
+  border: 1px solid var(--panel-border);
+  color: var(--accent);
+  font-size: 11px;
+  padding: var(--space-md);
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+.config-row input:focus,
+.config-row select:focus {
+  border-color: var(--admin-primary);
+  outline: none;
+  box-shadow: 0 0 5px var(--admin-glow);
+}
+
+.config-hint {
+  font-size: 9px;
+  color: var(--text-dim);
+}
+
+.config-actions {
+  display: flex;
+  gap: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px dashed var(--panel-border);
+}
+
+/* =============================================================================
+   USER CONTROL PANEL
+   ============================================================================= */
+.user-control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.user-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.user-search label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--admin-primary);
+}
+
+.user-search input {
+  flex: 1;
+  max-width: 400px;
+  background: #050508;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: var(--space-md) var(--space-lg);
+  font-size: 11px;
+}
+
+.user-search input:focus {
+  border-color: var(--admin-primary);
+  outline: none;
+}
+
+.user-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.gift-panel {
+  background: #0f0a0c;
+  border: 1px solid var(--panel-border);
+  padding: var(--space-lg);
+}
+
+.gift-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.gift-row label {
+  width: 150px;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.gift-row input {
+  width: 150px;
+  background: #050508;
+  border: 1px solid var(--panel-border);
+  color: var(--accent-good);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.user-list-placeholder {
+  padding: var(--space-xl);
+  border: 1px dashed var(--panel-border);
+  text-align: center;
+}
+
+.hint-text {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+/* =============================================================================
+   BROADCAST PANEL
+   ============================================================================= */
+.broadcast-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.broadcast-panel select {
+  width: 200px;
+  background: #050508;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: var(--space-md);
+}
+
+.broadcast-message-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.broadcast-message-wrap label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.broadcast-message-wrap textarea {
+  background: #050508;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: var(--space-lg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.broadcast-message-wrap textarea:focus {
+  border-color: var(--accent-warn);
+  outline: none;
+}
+
+.broadcast-history-placeholder {
+  padding: var(--space-lg);
+  border: 1px dashed var(--panel-border);
+}
+
+/* =============================================================================
+   EMERGENCY PANEL
+   ============================================================================= */
+.emergency-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.emergency-group {
+  background: #0f0a0c;
+  border: 1px solid var(--admin-primary-dim);
+  padding: var(--space-lg);
+}
+
+.emergency-group .config-group-header {
+  color: var(--admin-primary);
+}
+
+.maintenance-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  font-size: 11px;
+}
+
+.status-badge {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.status-badge.status-good {
+  background: rgba(0, 255, 106, 0.2);
+  border: 1px solid var(--accent-good);
+  color: var(--accent-good);
+}
+
+.status-badge.status-danger {
+  background: rgba(255, 56, 72, 0.2);
+  border: 1px solid var(--admin-primary);
+  color: var(--admin-primary);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.emergency-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+/* =============================================================================
+   ADMIN LOGS PANEL
+   ============================================================================= */
+.admin-logs {
+  background: #0a0708;
+  border: 1px solid var(--panel-border);
+  margin-top: auto;
+  transition: border-color 200ms ease;
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background: #0f0a0c;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.logs-header span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--admin-primary);
+}
+
+.logs-content {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--space-md) var(--space-lg);
+}
+
+.log-entry {
+  font-size: 10px;
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.log-time {
+  color: var(--text-dim);
+  margin-right: var(--space-md);
+}
+
+.log-admin {
+  color: var(--accent-warn);
+  margin-right: var(--space-md);
+}
+
+.log-action {
+  color: var(--text);
+}
+
+/* =============================================================================
+   ADMIN BUTTON VARIANTS
+   ============================================================================= */
+body.admin-theme .btn-danger {
+  border-color: var(--admin-primary);
+  color: var(--admin-primary);
+}
+
+body.admin-theme .btn-danger:hover {
+  background: var(--admin-primary);
+  color: #050508;
+  box-shadow: 0 0 15px var(--admin-glow);
+}
+
+body.admin-theme .btn-warning {
+  border-color: var(--accent-warn);
+  color: var(--accent-warn);
+}
+
+body.admin-theme .btn-warning:hover {
+  background: var(--accent-warn);
+  color: #050508;
+}
+
+body.admin-theme .btn-success {
+  border-color: var(--accent-good);
+  color: var(--accent-good);
+}
+
+body.admin-theme .btn-success:hover {
+  background: var(--accent-good);
+  color: #050508;
+}
+
+.btn-sm {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 9px;
+}
+
+/* =============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================= */
+@media (max-width: 1024px) {
+  .config-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .config-row label {
+    text-align: left;
+  }
+
+  .admin-header-center {
+    display: none;
+  }
+
+  .admin-nav {
+    flex-wrap: wrap;
+  }
+}

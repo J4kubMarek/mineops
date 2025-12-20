@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 require('dotenv').config();
 
+// Import game engine for tick mechanism
+const gameEngine = require('./backend/engine/gameEngine');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -51,6 +54,11 @@ app.get('/system', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'system.html'));
 });
 
+// Admin panel route
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'admin.html'));
+});
+
 // Logout route
 app.get('/logout', (req, res) => {
   // TODO: Implement proper session logout
@@ -64,6 +72,9 @@ app.get('/components/:component', (req, res) => {
 
 // API Routes (pro budoucí použití)
 app.use('/api', require('./backend/routes/api'));
+
+// Admin API Routes
+app.use('/api/admin', require('./backend/routes/admin'));
 
 // Error handling
 app.use((req, res) => {
@@ -85,7 +96,12 @@ app.listen(PORT, () => {
 ║  Status: ONLINE                                           ║
 ║  Port: ${PORT}                                              ║
 ║  URL: http://localhost:${PORT}                              ║
+║  Admin: http://localhost:${PORT}/admin                      ║
 ║  Environment: ${process.env.NODE_ENV}                                ║
 ╚═══════════════════════════════════════════════════════════╝
   `);
+
+  // Start game engine with tick mechanism (10s ticks)
+  // This initializes the mining calculation loop and price updates
+  gameEngine.startEngine();
 });
