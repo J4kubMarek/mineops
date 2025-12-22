@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -836,7 +836,7 @@
           <h1>FARM OPERATIONS</h1>
         </div>
         <div class="panel-content">
-          <p class="text-muted">Sprava tezebnich farem. Pronajmi si prostor a prirad do nej hardware.</p>
+          <p class="text-muted">Manage your mining farms. Rent a space and assign hardware to it.</p>
         </div>
       </div>
 
@@ -849,12 +849,12 @@
            ==================================================================== -->
       <div class="panel mb-lg">
         <div class="panel-header">
-          <h2>ZAKOUPENY HARDWARE</h2>
+          <h2>PURCHASED HARDWARE</h2>
         </div>
         <div class="panel-content">
           <div class="hardware-overview" id="hardwareOverview">
             <!-- Hardware items budou nacteny z API -->
-            <div class="no-hardware">Nacitam hardware...</div>
+            <div class="no-hardware">Loading hardware...</div>
           </div>
         </div>
       </div>
@@ -864,13 +864,13 @@
            ==================================================================== -->
       <div class="panel">
         <div class="panel-header">
-          <h2>MOJE FARMY</h2>
+          <h2>MY FARMS</h2>
         </div>
         <div class="panel-content">
           <!-- Tlacitko pro vytvoreni nove farmy -->
           <div class="create-farm-section" id="createFarmSection">
             <button class="btn-create-farm" onclick="openSpaceModal()">
-              + ZALOZIT NOVOU FARMU
+              + CREATE NEW FARM
             </button>
           </div>
 
@@ -882,8 +882,8 @@
           <!-- Prazdny stav kdyz neni zadna farma -->
           <div class="empty-state" id="emptyState" style="display: none;">
             <div class="empty-state-icon">⛏️</div>
-            <div class="empty-state-title">Zadne farmy</div>
-            <div class="empty-state-desc">Zaloz si prvni farmu a zacni tezit!</div>
+            <div class="empty-state-title">No farms yet</div>
+            <div class="empty-state-desc">Create your first farm and start mining!</div>
           </div>
         </div>
       </div>
@@ -898,7 +898,7 @@
   <div class="modal-overlay" id="spaceModal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Vyber prostor pro farmu</span>
+        <span class="modal-title">Select space for farm</span>
         <button class="modal-close" onclick="closeSpaceModal()">×</button>
       </div>
       <div class="modal-body">
@@ -916,19 +916,19 @@
   <div class="modal-overlay" id="nameModal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Pojmenuj svou farmu</span>
+        <span class="modal-title">Name your farm</span>
         <button class="modal-close" onclick="closeNameModal()">×</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label">Nazev farmy</label>
-          <input type="text" class="form-input" id="farmNameInput" placeholder="Moje prvni farma" maxlength="100">
-          <div class="form-hint">Nazev muze mit max. 100 znaku. Lze pozdeji zmenit.</div>
+          <label class="form-label">Farm name</label>
+          <input type="text" class="form-input" id="farmNameInput" placeholder="My first farm" maxlength="100">
+          <div class="form-hint">Name can have max 100 characters. Can be changed later.</div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-modal" onclick="closeNameModal()">Zrusit</button>
-        <button class="btn-modal primary" onclick="createFarm()">Vytvorit farmu</button>
+        <button class="btn-modal" onclick="closeNameModal()">Cancel</button>
+        <button class="btn-modal primary" onclick="createFarm()">Create farm</button>
       </div>
     </div>
   </div>
@@ -939,18 +939,18 @@
   <div class="modal-overlay" id="renameModal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Prejmenovat farmu</span>
+        <span class="modal-title">Rename farm</span>
         <button class="modal-close" onclick="closeRenameModal()">×</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label class="form-label">Novy nazev</label>
+          <label class="form-label">New name</label>
           <input type="text" class="form-input" id="renameInput" maxlength="100">
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-modal" onclick="closeRenameModal()">Zrusit</button>
-        <button class="btn-modal primary" onclick="renameFarm()">Ulozit</button>
+        <button class="btn-modal" onclick="closeRenameModal()">Cancel</button>
+        <button class="btn-modal primary" onclick="renameFarm()">Save</button>
       </div>
     </div>
   </div>
@@ -962,16 +962,16 @@
   <div class="modal-overlay" id="deleteModal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Smazat farmu</span>
+        <span class="modal-title">Delete farm</span>
         <button class="modal-close" onclick="closeDeleteModal()">×</button>
       </div>
       <div class="modal-body">
-        <p style="margin-bottom: var(--space-lg);">Opravdu chces smazat farmu <strong id="deleteFarmName"></strong>?</p>
-        <p class="text-dim" style="font-size: 10px;">Vschen hardware bude vracen do inventare.</p>
+        <p style="margin-bottom: var(--space-lg);">Are you sure you want to delete farm <strong id="deleteFarmName"></strong>?</p>
+        <p class="text-dim" style="font-size: 10px;">All hardware will be returned to inventory.</p>
       </div>
       <div class="modal-footer">
-        <button class="btn-modal" onclick="closeDeleteModal()">Zrusit</button>
-        <button class="btn-modal danger" onclick="deleteFarm()">Smazat</button>
+        <button class="btn-modal" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-modal danger" onclick="deleteFarm()">Delete</button>
       </div>
     </div>
   </div>
@@ -983,13 +983,13 @@
   <div class="modal-overlay" id="upgradeModal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Upgrade prostoru</span>
+        <span class="modal-title">Upgrade space</span>
         <button class="modal-close" onclick="closeUpgradeModal()">×</button>
       </div>
       <div class="modal-body">
         <div class="upgrade-info">
-          <p><span class="current-space-label">Aktualni prostor:</span> <span class="current-space-name" id="currentSpaceName"></span></p>
-          <p>Vyber vetsi prostor pro svou farmu. Upgrade umoznuje pridat vice hardwaru.</p>
+          <p><span class="current-space-label">Current space:</span> <span class="current-space-name" id="currentSpaceName"></span></p>
+          <p>Select a larger space for your farm. Upgrading allows you to add more hardware.</p>
         </div>
         <div class="space-grid" id="upgradeSpaceGrid">
           <!-- Dostupne prostory pro upgrade -->
@@ -1005,21 +1005,21 @@
   <div class="modal-overlay" id="assignModal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Prirazeni hardwaru</span>
+        <span class="modal-title">Assign hardware</span>
         <button class="modal-close" onclick="closeAssignModal()">×</button>
       </div>
       <div class="modal-body">
         <p style="margin-bottom: var(--space-lg); font-size: 10px; color: var(--text-muted);">
-          Vyber hardware k prirazeni do farmy <strong id="assignFarmName"></strong>.
-          <br>Kapacita: <span id="assignFarmCapacity"></span>
+          Select hardware to assign to farm <strong id="assignFarmName"></strong>.
+          <br>Capacity: <span id="assignFarmCapacity"></span>
         </p>
         <div class="assign-hw-list" id="assignHwList">
           <!-- Volny hardware bude nacten z API -->
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-modal" onclick="closeAssignModal()">Zrusit</button>
-        <button class="btn-modal primary" onclick="assignHardware()">Priradit</button>
+        <button class="btn-modal" onclick="closeAssignModal()">Cancel</button>
+        <button class="btn-modal primary" onclick="assignHardware()">Assign</button>
       </div>
     </div>
   </div>
@@ -1128,7 +1128,7 @@
       if (userHardware.length === 0) {
         container.innerHTML = `
           <div class="no-hardware">
-            Zadny hardware. <a href="/market" style="color: var(--accent);">Nakup v marketu</a>
+            No hardware. <a href="/market" style="color: var(--accent);">Buy in market</a>
           </div>
         `;
         return;
@@ -1197,9 +1197,9 @@
                 <div class="farm-card-space">${escapeHtml(farm.space_name)}</div>
               </div>
               <div class="farm-card-actions">
-                <button class="farm-action-btn" onclick="openRenameModal(${farm.id}, '${escapeHtml(farm.name)}')" title="Prejmenovat">✏️</button>
+                <button class="farm-action-btn" onclick="openRenameModal(${farm.id}, '${escapeHtml(farm.name)}')" title="Rename">✏️</button>
                 <button class="farm-action-btn upgrade" onclick="openUpgradeModal(${farm.id}, ${farm.space_id}, '${escapeHtml(farm.space_name)}')" title="Upgrade">⬆️</button>
-                <button class="farm-action-btn danger" onclick="openDeleteModal(${farm.id}, '${escapeHtml(farm.name)}')" title="Smazat">🗑️</button>
+                <button class="farm-action-btn danger" onclick="openDeleteModal(${farm.id}, '${escapeHtml(farm.name)}')" title="Delete">🗑️</button>
               </div>
             </div>
 
@@ -1207,7 +1207,7 @@
               <!-- Statistiky farmy -->
               <div class="farm-stats">
                 <div class="farm-stat">
-                  <div class="farm-stat-label">Spotreba</div>
+                  <div class="farm-stat-label">Power</div>
                   <div class="farm-stat-value power">${farm.current_power_watts} W</div>
                 </div>
                 <div class="farm-stat">
@@ -1215,7 +1215,7 @@
                   <div class="farm-stat-value hashrate">${formatHashrate(farm.total_hashrate)}</div>
                 </div>
                 <div class="farm-stat">
-                  <div class="farm-stat-label">El. / den</div>
+                  <div class="farm-stat-label">Elec / day</div>
                   <div class="farm-stat-value cost">$${dailyElecCost.toFixed(2)}</div>
                 </div>
               </div>
@@ -1223,7 +1223,7 @@
               <!-- Ukazatel vyuziti kapacity -->
               <div class="power-bar-container">
                 <div class="power-bar-label">
-                  <span class="text-dim">Kapacita</span>
+                  <span class="text-dim">Capacity</span>
                   <span>${farm.current_power_watts}W / ${farm.max_power_watts}W (${powerPercent}%)</span>
                 </div>
                 <div class="power-bar">
@@ -1234,14 +1234,14 @@
               <!-- Seznam hardwaru ve farme -->
               <div class="farm-hardware-list">
                 <div class="farm-hardware-header">
-                  <span class="farm-hardware-title">Prirazeny hardware</span>
+                  <span class="farm-hardware-title">Assigned hardware</span>
                   <button class="btn-assign-hw" onclick="openAssignModal(${farm.id}, '${escapeHtml(farm.name)}', ${farm.max_power_watts}, ${farm.current_power_watts})">
-                    + Pridat
+                    + Add
                   </button>
                 </div>
                 <div id="farm-hw-${farm.id}">
                   <!-- Hardware bude nacten samostatne -->
-                  <div class="no-farm-hardware">Nacitam...</div>
+                  <div class="no-farm-hardware">Loading...</div>
                 </div>
               </div>
             </div>
@@ -1265,7 +1265,7 @@
         if (!container) return;
 
         if (!data.success || data.hardware.length === 0) {
-          container.innerHTML = '<div class="no-farm-hardware">Zadny hardware</div>';
+          container.innerHTML = '<div class="no-farm-hardware">No hardware</div>';
           return;
         }
 
@@ -1276,7 +1276,7 @@
               <div class="farm-hw-stats">${hw.hashrate} ${hw.hashrate_unit} | ${hw.power_consumption * hw.quantity}W</div>
             </div>
             <span class="farm-hw-quantity">${hw.quantity}×</span>
-            <button class="btn-remove-hw" onclick="removeHardware(${farmId}, ${hw.farm_hardware_id})" title="Odebrat">×</button>
+            <button class="btn-remove-hw" onclick="removeHardware(${farmId}, ${hw.farm_hardware_id})" title="Remove">×</button>
           </div>
         `).join('');
 
@@ -1300,7 +1300,7 @@
       }
 
       if (filteredSpaces.length === 0) {
-        container.innerHTML = '<p class="text-dim" style="text-align: center; padding: var(--space-lg);">Zadne vetsi prostory nejsou dostupne.</p>';
+        container.innerHTML = '<p class="text-dim" style="text-align: center; padding: var(--space-lg);">No larger spaces available.</p>';
         return;
       }
 
@@ -1310,7 +1310,7 @@
           <div class="space-image">
             ${space.image_url
               ? `<img src="${escapeHtml(space.image_url)}" alt="${escapeHtml(space.name)}">`
-              : '[OBRAZEK]'
+              : '[IMAGE]'
             }
           </div>
 
@@ -1319,22 +1319,22 @@
             <div class="space-desc">${escapeHtml(space.description || '')}</div>
             <div class="space-specs">
               <div class="space-spec">
-                <span class="space-spec-label">Max. spotřeba: </span>
+                <span class="space-spec-label">Max power: </span>
                 <span class="space-spec-value power">${space.max_power_watts} W</span>
               </div>
               <div class="space-spec">
-                <span class="space-spec-label">Nájem/den: </span>
+                <span class="space-spec-label">Rent/day: </span>
                 <span class="space-spec-value rent">$${parseFloat(space.rent_usd_per_day).toFixed(2)}</span>
               </div>
               <div class="space-spec">
-                <span class="space-spec-label">Elektřina: </span>
+                <span class="space-spec-label">Electricity: </span>
                 <span class="space-spec-value elec">$${parseFloat(space.electricity_cost_per_kwh).toFixed(4)}/kWh</span>
               </div>
             </div>
           </div>
 
           <div class="space-actions">
-            <button class="btn-rent">${isUpgrade ? 'UPGRADOVAT' : 'PRONAJMOUT'}</button>
+            <button class="btn-rent">${isUpgrade ? 'UPGRADE' : 'RENT'}</button>
           </div>
         </div>
       `).join('');
@@ -1348,7 +1348,7 @@
       const remainingPower = maxPower - currentPower;
 
       if (availableHardware.length === 0) {
-        container.innerHTML = '<p class="text-dim" style="text-align: center; padding: var(--space-lg);">Zadny volny hardware. Nakup ho v marketu.</p>';
+        container.innerHTML = '<p class="text-dim" style="text-align: center; padding: var(--space-lg);">No available hardware. Buy some in the market.</p>';
         return;
       }
 
@@ -1362,9 +1362,9 @@
           <div class="assign-hw-item" data-hw-id="${hw.user_hardware_id}" data-power="${hw.power_consumption}">
             <div class="assign-hw-info">
               <div class="assign-hw-name">${escapeHtml(hw.name)}</div>
-              <div class="assign-hw-stats">${hw.hashrate} ${hw.hashrate_unit} | ${hw.power_consumption}W na kus</div>
+              <div class="assign-hw-stats">${hw.hashrate} ${hw.hashrate_unit} | ${hw.power_consumption}W per unit</div>
             </div>
-            <span class="assign-hw-available">Volnych: ${hw.available_quantity}</span>
+            <span class="assign-hw-available">Available: ${hw.available_quantity}</span>
             <div class="assign-hw-quantity">
               <input type="number" class="quantity-input"
                      data-hw-id="${hw.user_hardware_id}"
@@ -1477,7 +1477,7 @@
       activeFarmId = farmId;
       document.getElementById('assignFarmName').textContent = farmName;
       document.getElementById('assignFarmCapacity').textContent =
-        `${currentPower}W / ${maxPower}W (volno: ${maxPower - currentPower}W)`;
+        `${currentPower}W / ${maxPower}W (available: ${maxPower - currentPower}W)`;
 
       // Nacti aktualni volny hardware
       await loadAvailableHardware();
@@ -1502,12 +1502,12 @@
       const name = document.getElementById('farmNameInput').value.trim();
 
       if (!name) {
-        showStatus('Zadej nazev farmy', 'error');
+        showStatus('Enter farm name', 'error');
         return;
       }
 
       if (!selectedSpaceId) {
-        showStatus('Vyber prostor pro farmu', 'error');
+        showStatus('Select a space for farm', 'error');
         return;
       }
 
@@ -1533,7 +1533,7 @@
           showStatus(data.message, 'error');
         }
       } catch (error) {
-        showStatus('Chyba pripojeni k serveru', 'error');
+        showStatus('Connection error', 'error');
       }
 
       showLoading(false);
@@ -1546,7 +1546,7 @@
       const newName = document.getElementById('renameInput').value.trim();
 
       if (!newName) {
-        showStatus('Zadej novy nazev', 'error');
+        showStatus('Enter new name', 'error');
         return;
       }
 
@@ -1562,14 +1562,14 @@
         const data = await response.json();
 
         if (data.success) {
-          showStatus('Farma prejmenova', 'success');
+          showStatus('Farm renamed', 'success');
           closeRenameModal();
           await loadFarms();
         } else {
           showStatus(data.message, 'error');
         }
       } catch (error) {
-        showStatus('Chyba pripojeni k serveru', 'error');
+        showStatus('Connection error', 'error');
       }
 
       showLoading(false);
@@ -1597,7 +1597,7 @@
           showStatus(data.message, 'error');
         }
       } catch (error) {
-        showStatus('Chyba pripojeni k serveru', 'error');
+        showStatus('Connection error', 'error');
       }
 
       showLoading(false);
@@ -1626,7 +1626,7 @@
           showStatus(data.message, 'error');
         }
       } catch (error) {
-        showStatus('Chyba pripojeni k serveru', 'error');
+        showStatus('Connection error', 'error');
       }
 
       showLoading(false);
@@ -1650,7 +1650,7 @@
       });
 
       if (assignments.length === 0) {
-        showStatus('Vyber alespon jeden hardware', 'error');
+        showStatus('Select at least one hardware', 'error');
         return;
       }
 
@@ -1674,13 +1674,13 @@
             return;
           }
         } catch (error) {
-          showStatus('Chyba pripojeni k serveru', 'error');
+          showStatus('Connection error', 'error');
           showLoading(false);
           return;
         }
       }
 
-      showStatus('Hardware uspesne prirazen', 'success');
+      showStatus('Hardware assigned successfully', 'success');
       closeAssignModal();
       await loadFarms();
       await loadUserHardware();
@@ -1710,7 +1710,7 @@
           showStatus(data.message, 'error');
         }
       } catch (error) {
-        showStatus('Chyba pripojeni k serveru', 'error');
+        showStatus('Connection error', 'error');
       }
 
       showLoading(false);
