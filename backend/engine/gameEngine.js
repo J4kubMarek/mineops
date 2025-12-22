@@ -19,8 +19,7 @@
 
 const { GameConfig, logAdminAction } = require('../config/gameConfig');
 const priceService = require('../services/priceService');
-// PLACEHOLDER: Import databáze až bude implementována
-// const db = require('../../config/database');
+const pool = require('../../config/database');
 
 /**
  * Stav herního enginu
@@ -74,6 +73,7 @@ function calculateMinedBTC(hashrate) {
 
 /**
  * Vypočítá náklady na elektřinu za jeden tick
+ * Používá výchozí cenu z GameConfig
  *
  * @param {number} powerWatts - Spotřeba v Wattech
  * @returns {number} - Náklady v USD
@@ -83,6 +83,33 @@ function calculateElectricityCost(powerWatts) {
   const tickHours = GameConfig.system.tickInterval / 1000 / 3600;
 
   return powerWatts * costPerWattHour * tickHours;
+}
+
+/**
+ * Vypočítá náklady na elektřinu za jeden tick s vlastní cenou za kWh
+ * Používá se pro farmy s různými cenami elektřiny
+ *
+ * @param {number} powerWatts - Spotřeba v Wattech
+ * @param {number} costPerKwh - Cena za kWh v USD
+ * @returns {number} - Náklady v USD za tick
+ */
+function calculateElectricityCostWithRate(powerWatts, costPerKwh) {
+  const costPerWattHour = costPerKwh / 1000; // kWh -> Wh
+  const tickHours = GameConfig.system.tickInterval / 1000 / 3600;
+
+  return powerWatts * costPerWattHour * tickHours;
+}
+
+/**
+ * Vypočítá denní nájem za prostor farmy (pro zobrazení)
+ * PLACEHOLDER: Nájem se strhává v denních intervalech, ne každý tick
+ *
+ * @param {number} rentPerDay - Denní nájem v USD
+ * @returns {number} - Nájem za tick (pro přibližný výpočet)
+ */
+function calculateRentPerTick(rentPerDay) {
+  const ticksPerDay = (24 * 60 * 60 * 1000) / GameConfig.system.tickInterval;
+  return rentPerDay / ticksPerDay;
 }
 
 /**
@@ -125,43 +152,12 @@ async function processTick() {
     GameConfig.system.lastTickTime = new Date().toISOString();
 
     // =========================================================================
-    // PLACEHOLDER: Zpracování všech aktivních hráčů
+    // ZPRACOVÁNÍ FAREM - Výpočet spotřeby a těžby pro každou farmu
     // =========================================================================
-    // Následující kód je připraven pro budoucí implementaci:
+    // PLACEHOLDER: Tato logika je připravena ale zatím deaktivována
+    // Aktivuje se po implementaci kompletního mining systému
     //
-    // const activeUsers = await db.query(`
-    //   SELECT u.id, u.username, u.balance, u.total_hashrate,
-    //          COALESCE(SUM(h.power_consumption), 0) as total_power
-    //   FROM users u
-    //   LEFT JOIN user_hardware uh ON u.id = uh.user_id AND uh.is_active = true
-    //   LEFT JOIN hardware_types h ON uh.hardware_id = h.id
-    //   WHERE u.is_active = true
-    //   GROUP BY u.id
-    // `);
-    //
-    // for (const user of activeUsers.rows) {
-    //   // Výpočet těžby
-    //   const minedBTC = calculateMinedBTC(user.total_hashrate);
-    //
-    //   // Výpočet nákladů
-    //   const electricityCostUSD = calculateElectricityCost(user.total_power);
-    //   const electricityCostBTC = usdToBtc(electricityCostUSD);
-    //
-    //   // Čistý zisk
-    //   const netProfit = minedBTC - electricityCostBTC;
-    //
-    //   // Aktualizace balance
-    //   await db.query(`
-    //     UPDATE users
-    //     SET balance = balance + $1,
-    //         total_earned = total_earned + $2,
-    //         updated_at = NOW()
-    //     WHERE id = $3
-    //   `, [netProfit, minedBTC > 0 ? minedBTC : 0, user.id]);
-    //
-    //   // Broadcast update přes WebSocket
-    //   // broadcastToUser(user.id, { type: 'TICK_UPDATE', data: { ... } });
-    // }
+    // await processFarms();
     // =========================================================================
 
     // Výpočet trvání ticku
@@ -302,6 +298,170 @@ function getEngineStatus() {
 
 /**
  * =============================================================================
+ * FARM PROCESSING - Výpočty pro těžební farmy
+ * =============================================================================
+ */
+
+/**
+ * Zpracuje všechny aktivní farmy - vypočítá spotřebu a těžbu
+ * PLACEHOLDER: Tato funkce bude volána z processTick po aktivaci
+ *
+ * Logika:
+ * 1. Načte všechny aktivní farmy s jejich hardwarem
+ * 2. Pro každou farmu vypočítá:
+ *    - Celkovou spotřebu elektřiny
+ *    - Celkový hashrate
+ *    - Náklady na elektřinu (dle ceny v prostoru)
+ *    - Vytěžené BTC
+ * 3. Aktualizuje balance uživatele
+ */
+async function processFarms() {
+  try {
+    // Načti všechny aktivní farmy s jejich spotřebou a cenou elektřiny
+    const farmsResult = await pool.query(`
+      SELECT
+        f.id AS farm_id,
+        f.user_id,
+        f.name AS farm_name,
+        f.is_active,
+        fs.electricity_cost_per_kwh,
+        fs.rent_usd_per_day,
+        -- Celková spotřeba farmy (pouze běžící hardware)
+        COALESCE(
+          (
+            SELECT SUM(ht.power_consumption * fh.quantity)
+            FROM farm_hardware fh
+            JOIN user_hardware uh ON uh.id = fh.user_hardware_id
+            JOIN hardware_types ht ON ht.id = uh.hardware_type_id
+            WHERE fh.farm_id = f.id AND fh.is_running = true
+          ),
+          0
+        ) AS current_power_watts,
+        -- Celkový hashrate farmy
+        -- PLACEHOLDER: Zjednodušeno - ignoruje různé jednotky hashrate
+        COALESCE(
+          (
+            SELECT SUM(ht.hashrate * fh.quantity)
+            FROM farm_hardware fh
+            JOIN user_hardware uh ON uh.id = fh.user_hardware_id
+            JOIN hardware_types ht ON ht.id = uh.hardware_type_id
+            WHERE fh.farm_id = f.id AND fh.is_running = true
+          ),
+          0
+        ) AS total_hashrate
+      FROM farms f
+      JOIN farm_spaces fs ON fs.id = f.space_id
+      WHERE f.is_active = true
+    `);
+
+    // Zpracuj každou farmu
+    for (const farm of farmsResult.rows) {
+      if (farm.current_power_watts <= 0) {
+        continue; // Farma bez běžícího hardwaru - přeskoč
+      }
+
+      // Výpočet nákladů na elektřinu s cenou specifickou pro daný prostor
+      const electricityCostUSD = calculateElectricityCostWithRate(
+        farm.current_power_watts,
+        parseFloat(farm.electricity_cost_per_kwh)
+      );
+
+      // Výpočet vytěženého BTC (zjednodušený)
+      // PLACEHOLDER: Bude rozšířeno o různé kategorie a algoritmy
+      const minedBTC = calculateMinedBTC(parseFloat(farm.total_hashrate));
+
+      // Převod nákladů na elektřinu do BTC
+      const electricityCostBTC = usdToBtc(electricityCostUSD);
+
+      // Čistý zisk (může být záporný!)
+      const netProfit = minedBTC - electricityCostBTC;
+
+      // PLACEHOLDER: Aktualizace balance uživatele
+      // Toto je zatím zakomentováno - aktivuje se po testování
+      //
+      // await pool.query(`
+      //   UPDATE users
+      //   SET balance = balance + $1,
+      //       total_earned = CASE WHEN $2 > 0 THEN total_earned + $2 ELSE total_earned END,
+      //       updated_at = NOW()
+      //   WHERE id = $3
+      // `, [netProfit, minedBTC, farm.user_id]);
+      //
+      // // Záznam transakce za elektřinu
+      // if (electricityCostUSD > 0) {
+      //   await pool.query(`
+      //     INSERT INTO transactions (user_id, type, amount_usd, description, reference_id)
+      //     VALUES ($1, 'electricity', $2, $3, $4)
+      //   `, [
+      //     farm.user_id,
+      //     -electricityCostUSD,
+      //     `Elektřina: ${farm.farm_name} (${farm.current_power_watts}W)`,
+      //     farm.farm_id
+      //   ]);
+      // }
+    }
+
+  } catch (error) {
+    console.error('[GameEngine] Chyba při zpracování farem:', error);
+  }
+}
+
+/**
+ * Vypočítá statistiky pro všechny farmy uživatele
+ * Používá se pro zobrazení na dashboardu
+ *
+ * @param {number} userId - ID uživatele
+ * @returns {Object} - Statistiky farem
+ */
+async function getUserFarmStats(userId) {
+  try {
+    const result = await pool.query(`
+      SELECT
+        COUNT(f.id) AS total_farms,
+        COALESCE(SUM(
+          (
+            SELECT SUM(ht.power_consumption * fh.quantity)
+            FROM farm_hardware fh
+            JOIN user_hardware uh ON uh.id = fh.user_hardware_id
+            JOIN hardware_types ht ON ht.id = uh.hardware_type_id
+            WHERE fh.farm_id = f.id AND fh.is_running = true
+          )
+        ), 0) AS total_power_watts,
+        COALESCE(SUM(
+          (
+            SELECT SUM(ht.hashrate * fh.quantity)
+            FROM farm_hardware fh
+            JOIN user_hardware uh ON uh.id = fh.user_hardware_id
+            JOIN hardware_types ht ON ht.id = uh.hardware_type_id
+            WHERE fh.farm_id = f.id AND fh.is_running = true
+          )
+        ), 0) AS total_hashrate,
+        COALESCE(SUM(fs.rent_usd_per_day), 0) AS total_rent_per_day
+      FROM farms f
+      JOIN farm_spaces fs ON fs.id = f.space_id
+      WHERE f.user_id = $1 AND f.is_active = true
+    `, [userId]);
+
+    return result.rows[0] || {
+      total_farms: 0,
+      total_power_watts: 0,
+      total_hashrate: 0,
+      total_rent_per_day: 0
+    };
+
+  } catch (error) {
+    console.error('[GameEngine] Chyba při načítání statistik farem:', error);
+    return {
+      total_farms: 0,
+      total_power_watts: 0,
+      total_hashrate: 0,
+      total_rent_per_day: 0
+    };
+  }
+}
+
+/**
+ * =============================================================================
  * CONNECTION MANAGEMENT (PLACEHOLDER)
  * =============================================================================
  * Tyto funkce budou použity po implementaci WebSocket
@@ -345,7 +505,13 @@ module.exports = {
   // Calculations (pro testování a budoucí použití)
   calculateMinedBTC,
   calculateElectricityCost,
+  calculateElectricityCostWithRate,
+  calculateRentPerTick,
   usdToBtc,
+
+  // Farm processing
+  processFarms,
+  getUserFarmStats,
 
   // Connection management
   registerConnection,
