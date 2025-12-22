@@ -3,8 +3,813 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MINEOPS - Farm Management</title>
+  <title>MINEOPS - Farm Operations</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* =============================================================================
+       FARM OPERATIONS PAGE - Styly pro spravu farem
+       ============================================================================= */
+
+    /* --------------------------------------------------------------------------
+       HARDWARE OVERVIEW PANEL - Prehled zakoupeneho hardwaru
+       -------------------------------------------------------------------------- */
+    .hardware-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .hardware-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--panel-light);
+      border: 1px solid var(--panel-border);
+    }
+
+    .hardware-item-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      border: 1px solid var(--panel-border);
+      font-size: 16px;
+    }
+
+    .hardware-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hardware-item-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hardware-item-details {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .hardware-item-quantity {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    .no-hardware {
+      text-align: center;
+      padding: var(--space-xl);
+      color: var(--text-dim);
+    }
+
+    /* --------------------------------------------------------------------------
+       CREATE FARM BUTTON - Tlacitko pro zalozeni farmy
+       -------------------------------------------------------------------------- */
+    .create-farm-section {
+      text-align: center;
+      padding: var(--space-xl);
+    }
+
+    .btn-create-farm {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: var(--space-lg) var(--space-xxl);
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+      transition: all 100ms linear;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-create-farm:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* --------------------------------------------------------------------------
+       FARM CARDS - Karty jednotlivych farem
+       -------------------------------------------------------------------------- */
+    .farms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .farm-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+    }
+
+    .farm-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg);
+      background: var(--panel-light);
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .farm-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .farm-card-space {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .farm-card-actions {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    .farm-action-btn {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: var(--space-sm) var(--space-md);
+      background: transparent;
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 100ms linear;
+    }
+
+    .farm-action-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .farm-action-btn.danger:hover {
+      border-color: var(--accent-danger);
+      color: var(--accent-danger);
+    }
+
+    .farm-action-btn.upgrade:hover {
+      border-color: var(--accent-good);
+      color: var(--accent-good);
+    }
+
+    .farm-card-body {
+      padding: var(--space-lg);
+    }
+
+    /* Farm stats grid */
+    .farm-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
+
+    .farm-stat {
+      text-align: center;
+      padding: var(--space-md);
+      background: var(--bg);
+      border: 1px solid var(--panel-border);
+    }
+
+    .farm-stat-label {
+      font-size: 8px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+    }
+
+    .farm-stat-value {
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-top: var(--space-xs);
+    }
+
+    .farm-stat-value.power {
+      color: var(--accent-warn);
+    }
+
+    .farm-stat-value.hashrate {
+      color: var(--accent);
+    }
+
+    .farm-stat-value.cost {
+      color: var(--accent-danger);
+    }
+
+    /* Power bar */
+    .power-bar-container {
+      margin-bottom: var(--space-lg);
+    }
+
+    .power-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      margin-bottom: var(--space-xs);
+    }
+
+    .power-bar {
+      height: 8px;
+      background: var(--bg);
+      border: 1px solid var(--panel-border);
+      overflow: hidden;
+    }
+
+    .power-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 300ms ease;
+    }
+
+    .power-bar-fill.warning {
+      background: var(--accent-warn);
+    }
+
+    .power-bar-fill.danger {
+      background: var(--accent-danger);
+    }
+
+    /* Farm hardware list */
+    .farm-hardware-list {
+      border: 1px solid var(--panel-border);
+    }
+
+    .farm-hardware-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      background: var(--bg);
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .farm-hardware-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .btn-assign-hw {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: var(--space-xs) var(--space-md);
+      background: transparent;
+      border: 1px solid var(--accent-good);
+      color: var(--accent-good);
+      cursor: pointer;
+      transition: all 100ms linear;
+    }
+
+    .btn-assign-hw:hover {
+      background: var(--accent-good);
+      color: var(--bg);
+    }
+
+    .farm-hardware-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .farm-hardware-item:last-child {
+      border-bottom: none;
+    }
+
+    .farm-hw-info {
+      flex: 1;
+    }
+
+    .farm-hw-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .farm-hw-stats {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .farm-hw-quantity {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      margin-right: var(--space-md);
+    }
+
+    .btn-remove-hw {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      padding: var(--space-xs) var(--space-sm);
+      background: transparent;
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all 100ms linear;
+    }
+
+    .btn-remove-hw:hover {
+      opacity: 1;
+      background: var(--accent-danger);
+      color: var(--bg);
+    }
+
+    .no-farm-hardware {
+      padding: var(--space-lg);
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 10px;
+    }
+
+    /* --------------------------------------------------------------------------
+       MODALS - Modalni okna
+       -------------------------------------------------------------------------- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 14, 26, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: var(--space-lg);
+      background: var(--panel-light);
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .modal-close {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: var(--space-sm);
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: var(--accent-danger);
+    }
+
+    .modal-body {
+      padding: var(--space-lg);
+    }
+
+    .modal-footer {
+      padding: var(--space-lg);
+      border-top: 1px solid var(--panel-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-md);
+    }
+
+    /* --------------------------------------------------------------------------
+       SPACE SELECTION - Vyber prostoru
+       -------------------------------------------------------------------------- */
+    .space-grid {
+      display: grid;
+      gap: var(--space-lg);
+    }
+
+    .space-card {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      background: var(--bg);
+      border: 2px solid var(--panel-border);
+      cursor: pointer;
+      transition: all 100ms linear;
+    }
+
+    .space-card:hover {
+      border-color: var(--accent);
+    }
+
+    .space-card.selected {
+      border-color: var(--accent);
+      background: var(--panel-light);
+    }
+
+    /* PLACEHOLDER: Obrazek prostoru - bude nahrazen skutecnym obrazkem */
+    .space-image {
+      width: 120px;
+      height: 80px;
+      background: var(--panel-light);
+      border: 1px dashed var(--panel-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 9px;
+      text-align: center;
+    }
+
+    .space-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .space-info {
+      flex: 1;
+    }
+
+    .space-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-xs);
+    }
+
+    .space-desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: var(--space-md);
+      line-height: 1.4;
+    }
+
+    .space-specs {
+      display: flex;
+      gap: var(--space-lg);
+    }
+
+    .space-spec {
+      font-size: 10px;
+    }
+
+    .space-spec-label {
+      color: var(--text-dim);
+    }
+
+    .space-spec-value {
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .space-spec-value.power {
+      color: var(--accent-warn);
+    }
+
+    .space-spec-value.rent {
+      color: var(--accent-good);
+    }
+
+    .space-spec-value.elec {
+      color: var(--accent);
+    }
+
+    .space-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-rent {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: var(--space-md) var(--space-lg);
+      background: transparent;
+      border: 1px solid var(--accent-good);
+      color: var(--accent-good);
+      cursor: pointer;
+      transition: all 100ms linear;
+      text-transform: uppercase;
+    }
+
+    .btn-rent:hover {
+      background: var(--accent-good);
+      color: var(--bg);
+    }
+
+    /* --------------------------------------------------------------------------
+       FORM INPUTS - Vstupni pole
+       -------------------------------------------------------------------------- */
+    .form-group {
+      margin-bottom: var(--space-lg);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: var(--space-sm);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: var(--space-md);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-hint {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: var(--space-xs);
+    }
+
+    /* Buttons in modals */
+    .btn-modal {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: var(--space-md) var(--space-xl);
+      background: transparent;
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 100ms linear;
+      text-transform: uppercase;
+    }
+
+    .btn-modal:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    .btn-modal.primary {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-modal.primary:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .btn-modal.danger {
+      border-color: var(--accent-danger);
+      color: var(--accent-danger);
+    }
+
+    .btn-modal.danger:hover {
+      background: var(--accent-danger);
+      color: var(--bg);
+    }
+
+    /* --------------------------------------------------------------------------
+       ASSIGN HARDWARE MODAL - Prirazeni hardwaru
+       -------------------------------------------------------------------------- */
+    .assign-hw-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .assign-hw-item {
+      display: flex;
+      align-items: center;
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--panel-border);
+      cursor: pointer;
+      transition: background 100ms linear;
+    }
+
+    .assign-hw-item:hover {
+      background: var(--panel-light);
+    }
+
+    .assign-hw-item:last-child {
+      border-bottom: none;
+    }
+
+    .assign-hw-checkbox {
+      margin-right: var(--space-md);
+    }
+
+    .assign-hw-info {
+      flex: 1;
+    }
+
+    .assign-hw-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .assign-hw-stats {
+      font-size: 9px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .assign-hw-available {
+      font-size: 10px;
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    .assign-hw-quantity {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .quantity-input {
+      width: 60px;
+      padding: var(--space-xs) var(--space-sm);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-align: center;
+      background: var(--bg);
+      border: 1px solid var(--panel-border);
+      color: var(--text);
+    }
+
+    /* --------------------------------------------------------------------------
+       UPGRADE MODAL - Vyber noveho prostoru
+       -------------------------------------------------------------------------- */
+    .upgrade-info {
+      padding: var(--space-lg);
+      background: var(--bg);
+      border: 1px dashed var(--panel-border);
+      margin-bottom: var(--space-lg);
+    }
+
+    .upgrade-info p {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: var(--space-sm);
+    }
+
+    .upgrade-info p:last-child {
+      margin-bottom: 0;
+    }
+
+    .current-space-label {
+      font-size: 9px;
+      color: var(--text-dim);
+    }
+
+    .current-space-name {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* --------------------------------------------------------------------------
+       STATUS MESSAGES - Stavove zpravy
+       -------------------------------------------------------------------------- */
+    .status-message {
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .status-message.success {
+      display: block;
+      background: rgba(0, 255, 106, 0.1);
+      border: 1px solid var(--accent-good);
+      color: var(--accent-good);
+    }
+
+    .status-message.error {
+      display: block;
+      background: rgba(255, 56, 72, 0.1);
+      border: 1px solid var(--accent-danger);
+      color: var(--accent-danger);
+    }
+
+    /* --------------------------------------------------------------------------
+       LOADING OVERLAY
+       -------------------------------------------------------------------------- */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 14, 26, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+    }
+
+    .loading-overlay.active {
+      display: flex;
+    }
+
+    .loading-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      animation: pulse 1s steps(4) infinite;
+    }
+
+    /* --------------------------------------------------------------------------
+       EMPTY STATE - Prazdny stav
+       -------------------------------------------------------------------------- */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-xxl);
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-lg);
+      opacity: 0.3;
+    }
+
+    .empty-state-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .empty-state-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: var(--space-lg);
+    }
+
+    /* --------------------------------------------------------------------------
+       RESPONSIVE
+       -------------------------------------------------------------------------- */
+    @media (max-width: 600px) {
+      .space-card {
+        grid-template-columns: 1fr;
+      }
+
+      .space-image {
+        width: 100%;
+      }
+
+      .farms-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .farm-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
   <!-- Sidebar Component -->
@@ -15,82 +820,999 @@
     <!-- Ticker Component -->
     <div id="ticker-container"></div>
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <span class="loading-text">PROCESSING...</span>
+    </div>
+
     <!-- Main Content -->
     <div class="container">
-    <div class="panel mb-lg">
-      <div class="panel-header">
-        <h1>FARM MANAGEMENT</h1>
-      </div>
-      <div class="panel-content">
-        <p class="text-muted">Správa těžební farmy a konfigurace</p>
-      </div>
-    </div>
 
-    <!-- Farm Overview -->
-    <div class="grid grid-2 mb-lg">
-      <div class="panel">
+      <!-- ====================================================================
+           HEADER PANEL - Nazev stranky a popis
+           ==================================================================== -->
+      <div class="panel mb-lg">
         <div class="panel-header">
-          <h2>ACTIVE MINERS</h2>
+          <h1>FARM OPERATIONS</h1>
         </div>
         <div class="panel-content">
-          <p class="text-dim text-center">No active miners...</p>
+          <p class="text-muted">Sprava tezebnich farem. Pronajmi si prostor a prirad do nej hardware.</p>
         </div>
       </div>
 
-      <div class="panel">
+      <!-- Status message -->
+      <div class="status-message" id="statusMessage"></div>
+
+      <!-- ====================================================================
+           HARDWARE OVERVIEW - Prehled zakoupeneho hardwaru
+           Zobrazuje veskerý hardware v inventari a kolik kusu je volnych
+           ==================================================================== -->
+      <div class="panel mb-lg">
         <div class="panel-header">
-          <h2>FARM SETTINGS</h2>
+          <h2>ZAKOUPENY HARDWARE</h2>
         </div>
         <div class="panel-content">
-          <div class="mb-md">
-            <label>Mining Pool</label>
-            <select style="width: 100%; margin-top: 4px;">
-              <option>Select pool...</option>
-            </select>
-          </div>
-
-          <div class="mb-md">
-            <label>Power Mode</label>
-            <select style="width: 100%; margin-top: 4px;">
-              <option>Balanced</option>
-              <option>Performance</option>
-              <option>Eco</option>
-            </select>
-          </div>
-
-          <button class="btn-primary" style="width: 100%;">APPLY SETTINGS</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Farm Stats -->
-    <div class="panel">
-      <div class="panel-header">
-        <h2>FARM STATISTICS</h2>
-      </div>
-      <div class="panel-content">
-        <div class="grid grid-3">
-          <div class="stat">
-            <label class="stat-label">Uptime</label>
-            <div class="stat-value">0h 0m</div>
-          </div>
-
-          <div class="stat">
-            <label class="stat-label">Total Blocks</label>
-            <div class="stat-value text-good">0</div>
-          </div>
-
-          <div class="stat">
-            <label class="stat-label">Pool Share</label>
-            <div class="stat-value text-accent">0.00%</div>
+          <div class="hardware-overview" id="hardwareOverview">
+            <!-- Hardware items budou nacteny z API -->
+            <div class="no-hardware">Nacitam hardware...</div>
           </div>
         </div>
       </div>
+
+      <!-- ====================================================================
+           FARMS SECTION - Seznam farem a tlacitko pro vytvoreni
+           ==================================================================== -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2>MOJE FARMY</h2>
+        </div>
+        <div class="panel-content">
+          <!-- Tlacitko pro vytvoreni nove farmy -->
+          <div class="create-farm-section" id="createFarmSection">
+            <button class="btn-create-farm" onclick="openSpaceModal()">
+              + ZALOZIT NOVOU FARMU
+            </button>
+          </div>
+
+          <!-- Grid s farmami -->
+          <div class="farms-grid" id="farmsGrid">
+            <!-- Farmy budou nacteny z API -->
+          </div>
+
+          <!-- Prazdny stav kdyz neni zadna farma -->
+          <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">⛏️</div>
+            <div class="empty-state-title">Zadne farmy</div>
+            <div class="empty-state-desc">Zaloz si prvni farmu a zacni tezit!</div>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: VYBER PROSTORU
+       Zobrazi dostupne prostory pro pronajeti
+       ========================================================================== -->
+  <div class="modal-overlay" id="spaceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Vyber prostor pro farmu</span>
+        <button class="modal-close" onclick="closeSpaceModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="space-grid" id="spaceGrid">
+          <!-- Prostory budou nacteny z API -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: POJMENOVANI FARMY
+       Po vyberu prostoru se zobrazi pro zadani nazvu farmy
+       ========================================================================== -->
+  <div class="modal-overlay" id="nameModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Pojmenuj svou farmu</span>
+        <button class="modal-close" onclick="closeNameModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nazev farmy</label>
+          <input type="text" class="form-input" id="farmNameInput" placeholder="Moje prvni farma" maxlength="100">
+          <div class="form-hint">Nazev muze mit max. 100 znaku. Lze pozdeji zmenit.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal" onclick="closeNameModal()">Zrusit</button>
+        <button class="btn-modal primary" onclick="createFarm()">Vytvorit farmu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: PREJMENOVAT FARMU
+       ========================================================================== -->
+  <div class="modal-overlay" id="renameModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Prejmenovat farmu</span>
+        <button class="modal-close" onclick="closeRenameModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Novy nazev</label>
+          <input type="text" class="form-input" id="renameInput" maxlength="100">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal" onclick="closeRenameModal()">Zrusit</button>
+        <button class="btn-modal primary" onclick="renameFarm()">Ulozit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: SMAZAT FARMU
+       Potvrzeni smazani farmy
+       ========================================================================== -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Smazat farmu</span>
+        <button class="modal-close" onclick="closeDeleteModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: var(--space-lg);">Opravdu chces smazat farmu <strong id="deleteFarmName"></strong>?</p>
+        <p class="text-dim" style="font-size: 10px;">Vschen hardware bude vracen do inventare.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal" onclick="closeDeleteModal()">Zrusit</button>
+        <button class="btn-modal danger" onclick="deleteFarm()">Smazat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: UPGRADE PROSTORU
+       Vyber vetsiho prostoru pro farmu
+       ========================================================================== -->
+  <div class="modal-overlay" id="upgradeModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Upgrade prostoru</span>
+        <button class="modal-close" onclick="closeUpgradeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="upgrade-info">
+          <p><span class="current-space-label">Aktualni prostor:</span> <span class="current-space-name" id="currentSpaceName"></span></p>
+          <p>Vyber vetsi prostor pro svou farmu. Upgrade umoznuje pridat vice hardwaru.</p>
+        </div>
+        <div class="space-grid" id="upgradeSpaceGrid">
+          <!-- Dostupne prostory pro upgrade -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: PRIRAZENI HARDWARU
+       Vyber hardwaru k prirazeni do farmy
+       ========================================================================== -->
+  <div class="modal-overlay" id="assignModal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Prirazeni hardwaru</span>
+        <button class="modal-close" onclick="closeAssignModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: var(--space-lg); font-size: 10px; color: var(--text-muted);">
+          Vyber hardware k prirazeni do farmy <strong id="assignFarmName"></strong>.
+          <br>Kapacita: <span id="assignFarmCapacity"></span>
+        </p>
+        <div class="assign-hw-list" id="assignHwList">
+          <!-- Volny hardware bude nacten z API -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal" onclick="closeAssignModal()">Zrusit</button>
+        <button class="btn-modal primary" onclick="assignHardware()">Priradit</button>
+      </div>
     </div>
   </div>
 
   <!-- Scripts -->
   <script src="/js/components.js"></script>
+  <script>
+    // ==========================================================================
+    // FARM OPERATIONS - JavaScript logika
+    // ==========================================================================
+
+    // --------------------------------------------------------------------------
+    // GLOBALNI STAV
+    // --------------------------------------------------------------------------
+    // Uchovava data o farmach, prostorech a hardwaru
+    let farms = [];           // Seznam farem uzivatele
+    let spaces = [];          // Dostupne prostory
+    let userHardware = [];    // Hardware uzivatele (inventar)
+    let availableHardware = []; // Hardware neprirazeny k farmam
+
+    // Aktualne vybrany prostor pro novou farmu
+    let selectedSpaceId = null;
+
+    // ID farmy pro modalni operace (prejmenovat, smazat, upgrade, prirazeni)
+    let activeFarmId = null;
+
+    // --------------------------------------------------------------------------
+    // NACITANI DAT Z API
+    // --------------------------------------------------------------------------
+
+    /**
+     * Nacte seznam prostoru z API
+     * Prostory definuji kde muze hrac provozovat farmu
+     */
+    async function loadSpaces() {
+      try {
+        const response = await fetch('/api/farm-spaces');
+        const data = await response.json();
+        if (data.success) {
+          spaces = data.spaces;
+        }
+      } catch (error) {
+        console.error('Error loading spaces:', error);
+      }
+    }
+
+    /**
+     * Nacte farmy uzivatele z API
+     * Obsahuje i informace o spotrebe a prirazenem hardwaru
+     */
+    async function loadFarms() {
+      try {
+        const response = await fetch('/api/farms');
+        const data = await response.json();
+        if (data.success) {
+          farms = data.farms;
+          renderFarms();
+        }
+      } catch (error) {
+        console.error('Error loading farms:', error);
+      }
+    }
+
+    /**
+     * Nacte hardware uzivatele (inventar) z API
+     */
+    async function loadUserHardware() {
+      try {
+        const response = await fetch('/api/user/hardware');
+        const data = await response.json();
+        if (data.success) {
+          userHardware = data.hardware;
+          renderHardwareOverview();
+        }
+      } catch (error) {
+        console.error('Error loading user hardware:', error);
+      }
+    }
+
+    /**
+     * Nacte volny hardware (neprirazeny k zadne farme)
+     */
+    async function loadAvailableHardware() {
+      try {
+        const response = await fetch('/api/farms/available-hardware');
+        const data = await response.json();
+        if (data.success) {
+          availableHardware = data.hardware;
+        }
+      } catch (error) {
+        console.error('Error loading available hardware:', error);
+      }
+    }
+
+    // --------------------------------------------------------------------------
+    // RENDEROVANI UI
+    // --------------------------------------------------------------------------
+
+    /**
+     * Vykresli prehled zakoupeneho hardwaru
+     * Zobrazuje vsechny polozky v inventari s poctem kusu
+     */
+    function renderHardwareOverview() {
+      const container = document.getElementById('hardwareOverview');
+
+      if (userHardware.length === 0) {
+        container.innerHTML = `
+          <div class="no-hardware">
+            Zadny hardware. <a href="/market" style="color: var(--accent);">Nakup v marketu</a>
+          </div>
+        `;
+        return;
+      }
+
+      // PLACEHOLDER: Ikony pro kategorie - budou nahrazeny obrazky
+      const categoryIcons = {
+        'btc_asic': '₿',
+        'doge_asic': 'Ð',
+        'xmr_asic': 'ɱ',
+        'solo': '⚡'
+      };
+
+      container.innerHTML = userHardware.map(hw => `
+        <div class="hardware-item">
+          <div class="hardware-item-icon">${categoryIcons[hw.category] || '?'}</div>
+          <div class="hardware-item-info">
+            <div class="hardware-item-name">${escapeHtml(hw.name)}</div>
+            <div class="hardware-item-details">${hw.hashrate} ${hw.hashrate_unit} | ${hw.power_consumption}W</div>
+          </div>
+          <div class="hardware-item-quantity">${hw.quantity}×</div>
+        </div>
+      `).join('');
+    }
+
+    /**
+     * Vykresli seznam farem
+     * Kazda farma je karta s informacemi a akcemi
+     */
+    function renderFarms() {
+      const grid = document.getElementById('farmsGrid');
+      const emptyState = document.getElementById('emptyState');
+      const createSection = document.getElementById('createFarmSection');
+
+      if (farms.length === 0) {
+        grid.innerHTML = '';
+        emptyState.style.display = 'block';
+        createSection.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      createSection.style.display = 'block';
+
+      grid.innerHTML = farms.map(farm => {
+        // Vypocet procenta vyuziti kapacity
+        const powerPercent = farm.max_power_watts > 0
+          ? Math.round((farm.current_power_watts / farm.max_power_watts) * 100)
+          : 0;
+
+        // Barva power baru podle vyuziti
+        let powerBarClass = '';
+        if (powerPercent > 90) powerBarClass = 'danger';
+        else if (powerPercent > 70) powerBarClass = 'warning';
+
+        // Denni naklady na elektrinu (priblizne)
+        // PLACEHOLDER: Toto bude presnejsi az se implementuje tick system
+        const dailyElecCost = (farm.current_power_watts / 1000) * 24 * parseFloat(farm.electricity_cost_per_kwh);
+
+        return `
+          <div class="farm-card" data-farm-id="${farm.id}">
+            <!-- Hlavicka karty s nazvem a akcemi -->
+            <div class="farm-card-header">
+              <div>
+                <div class="farm-card-title">${escapeHtml(farm.name)}</div>
+                <div class="farm-card-space">${escapeHtml(farm.space_name)}</div>
+              </div>
+              <div class="farm-card-actions">
+                <button class="farm-action-btn" onclick="openRenameModal(${farm.id}, '${escapeHtml(farm.name)}')" title="Prejmenovat">✏️</button>
+                <button class="farm-action-btn upgrade" onclick="openUpgradeModal(${farm.id}, ${farm.space_id}, '${escapeHtml(farm.space_name)}')" title="Upgrade">⬆️</button>
+                <button class="farm-action-btn danger" onclick="openDeleteModal(${farm.id}, '${escapeHtml(farm.name)}')" title="Smazat">🗑️</button>
+              </div>
+            </div>
+
+            <div class="farm-card-body">
+              <!-- Statistiky farmy -->
+              <div class="farm-stats">
+                <div class="farm-stat">
+                  <div class="farm-stat-label">Spotreba</div>
+                  <div class="farm-stat-value power">${farm.current_power_watts} W</div>
+                </div>
+                <div class="farm-stat">
+                  <div class="farm-stat-label">Hashrate</div>
+                  <div class="farm-stat-value hashrate">${formatHashrate(farm.total_hashrate)}</div>
+                </div>
+                <div class="farm-stat">
+                  <div class="farm-stat-label">El. / den</div>
+                  <div class="farm-stat-value cost">$${dailyElecCost.toFixed(2)}</div>
+                </div>
+              </div>
+
+              <!-- Ukazatel vyuziti kapacity -->
+              <div class="power-bar-container">
+                <div class="power-bar-label">
+                  <span class="text-dim">Kapacita</span>
+                  <span>${farm.current_power_watts}W / ${farm.max_power_watts}W (${powerPercent}%)</span>
+                </div>
+                <div class="power-bar">
+                  <div class="power-bar-fill ${powerBarClass}" style="width: ${powerPercent}%"></div>
+                </div>
+              </div>
+
+              <!-- Seznam hardwaru ve farme -->
+              <div class="farm-hardware-list">
+                <div class="farm-hardware-header">
+                  <span class="farm-hardware-title">Prirazeny hardware</span>
+                  <button class="btn-assign-hw" onclick="openAssignModal(${farm.id}, '${escapeHtml(farm.name)}', ${farm.max_power_watts}, ${farm.current_power_watts})">
+                    + Pridat
+                  </button>
+                </div>
+                <div id="farm-hw-${farm.id}">
+                  <!-- Hardware bude nacten samostatne -->
+                  <div class="no-farm-hardware">Nacitam...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Nacti hardware pro kazdou farmu
+      farms.forEach(farm => loadFarmHardware(farm.id));
+    }
+
+    /**
+     * Nacte a vykresli hardware prirazeny k farme
+     */
+    async function loadFarmHardware(farmId) {
+      try {
+        const response = await fetch(`/api/farms/${farmId}/hardware`);
+        const data = await response.json();
+
+        const container = document.getElementById(`farm-hw-${farmId}`);
+        if (!container) return;
+
+        if (!data.success || data.hardware.length === 0) {
+          container.innerHTML = '<div class="no-farm-hardware">Zadny hardware</div>';
+          return;
+        }
+
+        container.innerHTML = data.hardware.map(hw => `
+          <div class="farm-hardware-item">
+            <div class="farm-hw-info">
+              <div class="farm-hw-name">${escapeHtml(hw.name)}</div>
+              <div class="farm-hw-stats">${hw.hashrate} ${hw.hashrate_unit} | ${hw.power_consumption * hw.quantity}W</div>
+            </div>
+            <span class="farm-hw-quantity">${hw.quantity}×</span>
+            <button class="btn-remove-hw" onclick="removeHardware(${farmId}, ${hw.farm_hardware_id})" title="Odebrat">×</button>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Error loading farm hardware:', error);
+      }
+    }
+
+    /**
+     * Vykresli prostory v modalu pro vyber
+     * @param {string} containerId - ID kontejneru pro vykresleni
+     * @param {number|null} minSortOrder - Minimalni sort_order (pro upgrade)
+     * @param {boolean} isUpgrade - Jde o upgrade existujici farmy
+     */
+    function renderSpaces(containerId, minSortOrder = null, isUpgrade = false) {
+      const container = document.getElementById(containerId);
+
+      let filteredSpaces = spaces;
+      if (minSortOrder !== null) {
+        filteredSpaces = spaces.filter(s => s.sort_order > minSortOrder);
+      }
+
+      if (filteredSpaces.length === 0) {
+        container.innerHTML = '<p class="text-dim" style="text-align: center; padding: var(--space-lg);">Zadne vetsi prostory nejsou dostupne.</p>';
+        return;
+      }
+
+      container.innerHTML = filteredSpaces.map(space => `
+        <div class="space-card" data-space-id="${space.id}" onclick="selectSpace(${space.id}, ${isUpgrade})">
+          <!-- PLACEHOLDER: Obrazek prostoru - bude nahrazen -->
+          <div class="space-image">
+            ${space.image_url
+              ? `<img src="${escapeHtml(space.image_url)}" alt="${escapeHtml(space.name)}">`
+              : '[OBRAZEK]'
+            }
+          </div>
+
+          <div class="space-info">
+            <div class="space-name">${escapeHtml(space.name)}</div>
+            <div class="space-desc">${escapeHtml(space.description || '')}</div>
+            <div class="space-specs">
+              <div class="space-spec">
+                <span class="space-spec-label">Max. spotřeba: </span>
+                <span class="space-spec-value power">${space.max_power_watts} W</span>
+              </div>
+              <div class="space-spec">
+                <span class="space-spec-label">Nájem/den: </span>
+                <span class="space-spec-value rent">$${parseFloat(space.rent_usd_per_day).toFixed(2)}</span>
+              </div>
+              <div class="space-spec">
+                <span class="space-spec-label">Elektřina: </span>
+                <span class="space-spec-value elec">$${parseFloat(space.electricity_cost_per_kwh).toFixed(4)}/kWh</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-actions">
+            <button class="btn-rent">${isUpgrade ? 'UPGRADOVAT' : 'PRONAJMOUT'}</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    /**
+     * Vykresli dostupny hardware v modalu pro prirazeni
+     */
+    function renderAssignHardware(farmId, maxPower, currentPower) {
+      const container = document.getElementById('assignHwList');
+      const remainingPower = maxPower - currentPower;
+
+      if (availableHardware.length === 0) {
+        container.innerHTML = '<p class="text-dim" style="text-align: center; padding: var(--space-lg);">Zadny volny hardware. Nakup ho v marketu.</p>';
+        return;
+      }
+
+      container.innerHTML = availableHardware.map(hw => {
+        const maxQuantity = Math.min(
+          hw.available_quantity,
+          Math.floor(remainingPower / hw.power_consumption)
+        );
+
+        return `
+          <div class="assign-hw-item" data-hw-id="${hw.user_hardware_id}" data-power="${hw.power_consumption}">
+            <div class="assign-hw-info">
+              <div class="assign-hw-name">${escapeHtml(hw.name)}</div>
+              <div class="assign-hw-stats">${hw.hashrate} ${hw.hashrate_unit} | ${hw.power_consumption}W na kus</div>
+            </div>
+            <span class="assign-hw-available">Volnych: ${hw.available_quantity}</span>
+            <div class="assign-hw-quantity">
+              <input type="number" class="quantity-input"
+                     data-hw-id="${hw.user_hardware_id}"
+                     min="0" max="${maxQuantity}" value="0"
+                     ${maxQuantity === 0 ? 'disabled' : ''}>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --------------------------------------------------------------------------
+    // MODAL OPERACE
+    // --------------------------------------------------------------------------
+
+    /**
+     * Otevre modal pro vyber prostoru (nova farma)
+     */
+    function openSpaceModal() {
+      selectedSpaceId = null;
+      renderSpaces('spaceGrid');
+      document.getElementById('spaceModal').classList.add('active');
+    }
+
+    function closeSpaceModal() {
+      document.getElementById('spaceModal').classList.remove('active');
+    }
+
+    /**
+     * Vybere prostor a otevre modal pro pojmenovani
+     */
+    function selectSpace(spaceId, isUpgrade = false) {
+      if (isUpgrade) {
+        // Upgrade existujici farmy
+        upgradeFarm(spaceId);
+      } else {
+        // Nova farma - pokracuj na pojmenovani
+        selectedSpaceId = spaceId;
+        closeSpaceModal();
+        openNameModal();
+      }
+    }
+
+    /**
+     * Otevre modal pro pojmenovani farmy
+     */
+    function openNameModal() {
+      document.getElementById('farmNameInput').value = '';
+      document.getElementById('nameModal').classList.add('active');
+      document.getElementById('farmNameInput').focus();
+    }
+
+    function closeNameModal() {
+      document.getElementById('nameModal').classList.remove('active');
+    }
+
+    /**
+     * Otevre modal pro prejmenovaní farmy
+     */
+    function openRenameModal(farmId, currentName) {
+      activeFarmId = farmId;
+      document.getElementById('renameInput').value = currentName;
+      document.getElementById('renameModal').classList.add('active');
+      document.getElementById('renameInput').focus();
+    }
+
+    function closeRenameModal() {
+      document.getElementById('renameModal').classList.remove('active');
+      activeFarmId = null;
+    }
+
+    /**
+     * Otevre modal pro smazani farmy
+     */
+    function openDeleteModal(farmId, farmName) {
+      activeFarmId = farmId;
+      document.getElementById('deleteFarmName').textContent = farmName;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+      activeFarmId = null;
+    }
+
+    /**
+     * Otevre modal pro upgrade prostoru
+     */
+    function openUpgradeModal(farmId, currentSpaceId, currentSpaceName) {
+      activeFarmId = farmId;
+      document.getElementById('currentSpaceName').textContent = currentSpaceName;
+
+      // Najdi aktualni sort_order prostoru
+      const currentSpace = spaces.find(s => s.id === currentSpaceId);
+      const minSortOrder = currentSpace ? currentSpace.sort_order : 0;
+
+      renderSpaces('upgradeSpaceGrid', minSortOrder, true);
+      document.getElementById('upgradeModal').classList.add('active');
+    }
+
+    function closeUpgradeModal() {
+      document.getElementById('upgradeModal').classList.remove('active');
+      activeFarmId = null;
+    }
+
+    /**
+     * Otevre modal pro prirazeni hardwaru
+     */
+    async function openAssignModal(farmId, farmName, maxPower, currentPower) {
+      activeFarmId = farmId;
+      document.getElementById('assignFarmName').textContent = farmName;
+      document.getElementById('assignFarmCapacity').textContent =
+        `${currentPower}W / ${maxPower}W (volno: ${maxPower - currentPower}W)`;
+
+      // Nacti aktualni volny hardware
+      await loadAvailableHardware();
+      renderAssignHardware(farmId, maxPower, currentPower);
+
+      document.getElementById('assignModal').classList.add('active');
+    }
+
+    function closeAssignModal() {
+      document.getElementById('assignModal').classList.remove('active');
+      activeFarmId = null;
+    }
+
+    // --------------------------------------------------------------------------
+    // API OPERACE
+    // --------------------------------------------------------------------------
+
+    /**
+     * Vytvori novou farmu
+     */
+    async function createFarm() {
+      const name = document.getElementById('farmNameInput').value.trim();
+
+      if (!name) {
+        showStatus('Zadej nazev farmy', 'error');
+        return;
+      }
+
+      if (!selectedSpaceId) {
+        showStatus('Vyber prostor pro farmu', 'error');
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        const response = await fetch('/api/farms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            space_id: selectedSpaceId,
+            name: name
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus(data.message, 'success');
+          closeNameModal();
+          await loadFarms();
+        } else {
+          showStatus(data.message, 'error');
+        }
+      } catch (error) {
+        showStatus('Chyba pripojeni k serveru', 'error');
+      }
+
+      showLoading(false);
+    }
+
+    /**
+     * Prejmenuje farmu
+     */
+    async function renameFarm() {
+      const newName = document.getElementById('renameInput').value.trim();
+
+      if (!newName) {
+        showStatus('Zadej novy nazev', 'error');
+        return;
+      }
+
+      showLoading(true);
+
+      try {
+        const response = await fetch(`/api/farms/${activeFarmId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus('Farma prejmenova', 'success');
+          closeRenameModal();
+          await loadFarms();
+        } else {
+          showStatus(data.message, 'error');
+        }
+      } catch (error) {
+        showStatus('Chyba pripojeni k serveru', 'error');
+      }
+
+      showLoading(false);
+    }
+
+    /**
+     * Smaze farmu
+     */
+    async function deleteFarm() {
+      showLoading(true);
+
+      try {
+        const response = await fetch(`/api/farms/${activeFarmId}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus(data.message, 'success');
+          closeDeleteModal();
+          await loadFarms();
+          await loadUserHardware();
+        } else {
+          showStatus(data.message, 'error');
+        }
+      } catch (error) {
+        showStatus('Chyba pripojeni k serveru', 'error');
+      }
+
+      showLoading(false);
+    }
+
+    /**
+     * Upgraduje prostor farmy
+     */
+    async function upgradeFarm(newSpaceId) {
+      showLoading(true);
+
+      try {
+        const response = await fetch(`/api/farms/${activeFarmId}/upgrade`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ new_space_id: newSpaceId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus(data.message, 'success');
+          closeUpgradeModal();
+          await loadFarms();
+        } else {
+          showStatus(data.message, 'error');
+        }
+      } catch (error) {
+        showStatus('Chyba pripojeni k serveru', 'error');
+      }
+
+      showLoading(false);
+    }
+
+    /**
+     * Priradi hardware k farme
+     */
+    async function assignHardware() {
+      const inputs = document.querySelectorAll('#assignHwList .quantity-input');
+      const assignments = [];
+
+      inputs.forEach(input => {
+        const quantity = parseInt(input.value) || 0;
+        if (quantity > 0) {
+          assignments.push({
+            user_hardware_id: parseInt(input.dataset.hwId),
+            quantity: quantity
+          });
+        }
+      });
+
+      if (assignments.length === 0) {
+        showStatus('Vyber alespon jeden hardware', 'error');
+        return;
+      }
+
+      showLoading(true);
+
+      // Prirad kazdy hardware zvlast
+      // PLACEHOLDER: V budoucnu muze byt batch operace
+      for (const assignment of assignments) {
+        try {
+          const response = await fetch(`/api/farms/${activeFarmId}/hardware`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(assignment)
+          });
+
+          const data = await response.json();
+
+          if (!data.success) {
+            showStatus(data.message, 'error');
+            showLoading(false);
+            return;
+          }
+        } catch (error) {
+          showStatus('Chyba pripojeni k serveru', 'error');
+          showLoading(false);
+          return;
+        }
+      }
+
+      showStatus('Hardware uspesne prirazen', 'success');
+      closeAssignModal();
+      await loadFarms();
+      await loadUserHardware();
+      await loadAvailableHardware();
+
+      showLoading(false);
+    }
+
+    /**
+     * Odebere hardware z farmy
+     */
+    async function removeHardware(farmId, farmHardwareId) {
+      showLoading(true);
+
+      try {
+        const response = await fetch(`/api/farms/${farmId}/hardware/${farmHardwareId}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showStatus(data.message, 'success');
+          await loadFarms();
+          await loadUserHardware();
+        } else {
+          showStatus(data.message, 'error');
+        }
+      } catch (error) {
+        showStatus('Chyba pripojeni k serveru', 'error');
+      }
+
+      showLoading(false);
+    }
+
+    // --------------------------------------------------------------------------
+    // POMOCNE FUNKCE
+    // --------------------------------------------------------------------------
+
+    /**
+     * Zobrazi/skryje loading overlay
+     */
+    function showLoading(show) {
+      const overlay = document.getElementById('loadingOverlay');
+      if (show) {
+        overlay.classList.add('active');
+      } else {
+        overlay.classList.remove('active');
+      }
+    }
+
+    /**
+     * Zobrazi stavovou zpravu
+     */
+    function showStatus(message, type = 'success') {
+      const el = document.getElementById('statusMessage');
+      el.textContent = message;
+      el.className = 'status-message ' + type;
+
+      // Automaticky skryj po 5s
+      setTimeout(() => {
+        el.className = 'status-message';
+      }, 5000);
+    }
+
+    /**
+     * Formatuje hashrate pro zobrazeni
+     * PLACEHOLDER: Bude rozsireno o jednotky z databaze
+     */
+    function formatHashrate(value) {
+      if (value >= 1000000) {
+        return (value / 1000000).toFixed(2) + ' PH/s';
+      } else if (value >= 1000) {
+        return (value / 1000).toFixed(2) + ' TH/s';
+      }
+      return parseFloat(value).toFixed(2) + ' H/s';
+    }
+
+    /**
+     * Escape HTML pro prevenci XSS
+     */
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // --------------------------------------------------------------------------
+    // INICIALIZACE
+    // --------------------------------------------------------------------------
+
+    /**
+     * Nacte vsechna data pri startu stranky
+     */
+    async function init() {
+      showLoading(true);
+
+      await Promise.all([
+        loadSpaces(),
+        loadUserHardware(),
+        loadAvailableHardware()
+      ]);
+
+      await loadFarms();
+
+      showLoading(false);
+    }
+
+    // Spustit pri nacteni stranky
+    document.addEventListener('DOMContentLoaded', init);
+
+    // Klavesove zkratky pro modaly
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeSpaceModal();
+        closeNameModal();
+        closeRenameModal();
+        closeDeleteModal();
+        closeUpgradeModal();
+        closeAssignModal();
+      }
+      if (e.key === 'Enter') {
+        // Enter pro potvrzeni v modalech s inputem
+        if (document.getElementById('nameModal').classList.contains('active')) {
+          createFarm();
+        }
+        if (document.getElementById('renameModal').classList.contains('active')) {
+          renameFarm();
+        }
+      }
+    });
+  </script>
 </body>
 </html>

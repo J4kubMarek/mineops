@@ -76,6 +76,9 @@ app.use('/api', require('./backend/routes/api'));
 // Hardware API Routes - nakup a sprava hardwaru
 app.use('/api', require('./backend/routes/hardware'));
 
+// Farm API Routes - sprava tezebních farem
+app.use('/api', require('./backend/routes/farms'));
+
 // Admin API Routes
 app.use('/api/admin', require('./backend/routes/admin'));
 
